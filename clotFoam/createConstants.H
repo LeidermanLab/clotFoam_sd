@@ -1,4 +1,4 @@
-Info<< "Reading inputParameters\n" << endl;
+Info<< "\nReading inputParameters\n" << endl;
 
 IOdictionary inputParameters
 (
@@ -35,131 +35,28 @@ dimensionedScalar C_CK
     inputParameters.lookup("C_CK")
 );
 
-
 /**************************************************************************
     Constants for Platelets
-***************************************************************************/
-// Total Number of platelet species
-label num_plts
-(
-    readLabel(inputParameters.lookup("num_plts"))
-);
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+ See plateletConstants.H. The constants for platelets are created in a 
+ structure so they can be easily passed to various classes.  This makes 
+ the code easier to modify for more complex platelet/coagulation models.
+ ***************************************************************************/
 
-// Total Number of platelet species
-label num_plts_mobile
-(
-    readLabel(inputParameters.lookup("num_plts_mobile"))
-);
-
-// Diameter of a Platelet 
-dimensionedScalar Pdiam
-(
-    "Pdiam",
-    dimLength,
-    inputParameters.lookup("Pdiam")
-);
-
-// Maximum Packing Limit of Platelets
-dimensionedScalar Pmax
-(
-    "Pmax",
-    dimless/dimVolume,
-    inputParameters.lookup("Pmax")
-);
-
-// Platelet Diffusion Constant
-dimensionedScalar Dp
-(
-    "Dp",
-    dimViscosity,
-    inputParameters.lookup("Dp")
-);
-
-// Platelet Cohesion binding rate
-dimensionedScalar KcohPmax
-(
-    "KcohPmax",
-    dimless/dimTime,
-    inputParameters.lookup("KcohPmax")
-);
-
-// Platelet activation rate by ADP k_{adp}^{pla}
-dimensionedScalar kADP_Pla
-(
-    "kADP_Pla",
-    dimless/dimTime,
-    inputParameters.lookup("kADP_Pla")
-);
-
-// Platelet activation rate by ADP k_{adp}^{pla}
-dimensionedScalar ke2_Pla
-(
-    "ke2_Pla",
-    dimless/dimTime,
-    inputParameters.lookup("ke2_Pla")
-);
-
-// Critcal concentration of thrombin for platelet activation
-dimensionedScalar e2_ast
-(
-    "e2_ast",
-    dimMoles/dimVolume,
-    inputParameters.lookup("e2_ast")
-);
-
-/**************************************************************************
-    Constants for Virtual Substance eta
-***************************************************************************/
-// Virtual substance Eta threshold
-dimensionedScalar eta_t
-(
-    "eta_t",
-    dimless,
-    inputParameters.lookup("eta_t")
-);
-
-// Virtual substance Eta_ast
-dimensionedScalar eta_ast
-(
-    "eta_ast",
-    dimless,
-    inputParameters.lookup("eta_ast")
-);
-
-// Virtual substance Eta Diffusion length
-dimensionedScalar l_D_eta
-(
-    "l_D_eta",
-    dimLength,
-    inputParameters.lookup("l_D_eta")
-);
-
-// Calculate g0 for the binding affinity function g(eta)
-dimensionedScalar g0
-(
-    "g0",
-    dimless,
-    0.0
-);
-g0 = ( pow(eta_ast,3.0) + pow(1.0 - eta_t,3.0) ) / pow(1.0-eta_t, 3.0);
+// Create an instance of plateletConstants for passing to various classes
+Info<< "\nCreating an instance of plateletConstants\n" << endl;
+plateletConstants pltConst(inputParameters);
 
 /**************************************************************************
     Constants for ADP
 ***************************************************************************/
+Info<< "\nReading constants for ADP and sigma_release\n" << endl;
 // ADP Diffusion Constant
 dimensionedScalar D_ADP
 (
     "D_ADP",
     dimViscosity,
     inputParameters.lookup("D_ADP")
-);
-
-// Critical concentration of ADP [ADP]^\ast
-dimensionedScalar ADP_ast
-(
-    "ADP_ast",
-    dimMoles/dimVol,
-    inputParameters.lookup("ADP_ast")
 );
 
 // Total ADP Released (\hat A)
@@ -240,120 +137,120 @@ scalar N_2 = readScalar(inputParameters.lookup("N_2"));
     Kinetic Rates for Chemical Reactions 
 ***************************************************************************/
 // Kinetic Rates for C0
-dimensionedScalar Kc0_on
+dimensionedScalar kC0_on
 (
-    "Kc0_on",
+    "kC0_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Kc0_on")
+    inputParameters.lookup("kC0_on")
 ); 
-dimensionedScalar Kc0_off
+dimensionedScalar kC0_off
 (
-    "Kc0_off",
+    "kC0_off",
     dimless/dimTime,
-    inputParameters.lookup("Kc0_off")
+    inputParameters.lookup("kC0_off")
 ); 
 
-dimensionedScalar Kc0_cat
+dimensionedScalar kC0_cat
 (
-    "Kc0_cat",
+    "kC0_cat",
     dimless/dimTime,
-    inputParameters.lookup("Kc0_cat")
+    inputParameters.lookup("kC0_cat")
 ); 
 
 // Kinetic Rates for C1
-dimensionedScalar Kc1_on
+dimensionedScalar kC1_on
 (
-    "Kc1_on",
+    "kC1_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Kc1_on")
+    inputParameters.lookup("kC1_on")
 ); 
-dimensionedScalar Kc1_off
+dimensionedScalar kC1_off
 (
-    "Kc1_off",
+    "kC1_off",
     dimless/dimTime,
-    inputParameters.lookup("Kc1_off")
+    inputParameters.lookup("kC1_off")
 ); 
 
-dimensionedScalar Kc1_cat
+dimensionedScalar kC1_cat
 (
-    "Kc1_cat",
+    "kC1_cat",
     dimless/dimTime,
-    inputParameters.lookup("Kc1_cat")
+    inputParameters.lookup("kC1_cat")
 ); 
 
 // Kinetic Rates for C2
-dimensionedScalar Kc2_on
+dimensionedScalar kC2_on
 (
-    "Kc2_on",
+    "kC2_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Kc2_on")
+    inputParameters.lookup("kC2_on")
 ); 
-dimensionedScalar Kc2_off
+dimensionedScalar kC2_off
 (
-    "Kc2_off",
+    "kC2_off",
     dimless/dimTime,
-    inputParameters.lookup("Kc2_off")
+    inputParameters.lookup("kC2_off")
 ); 
 
-dimensionedScalar Kc2_cat
+dimensionedScalar kC2_cat
 (
-    "Kc2_cat",
+    "kC2_cat",
     dimless/dimTime,
-    inputParameters.lookup("Kc2_cat")
+    inputParameters.lookup("kC2_cat")
 ); 
 
 // Kinetic Rates for S1
-dimensionedScalar Ks1_on
+dimensionedScalar kS1_on
 (
-    "Ks1_on",
+    "kS1_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Ks1_on")
+    inputParameters.lookup("kS1_on")
 ); 
-dimensionedScalar Ks1_off
+dimensionedScalar kS1_off
 (
-    "Ks1_off",
+    "kS1_off",
     dimless/dimTime,
-    inputParameters.lookup("Ks1_off")
+    inputParameters.lookup("kS1_off")
 ); 
 
 // Kinetic Rates for S2
-dimensionedScalar Ks2_on
+dimensionedScalar kS2_on
 (
-    "Ks2_on",
+    "kS2_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Ks2_on")
+    inputParameters.lookup("kS2_on")
 ); 
-dimensionedScalar Ks2_off
+dimensionedScalar kS2_off
 (
-    "Ks2_off",
+    "kS2_off",
     dimless/dimTime,
-    inputParameters.lookup("Ks2_off")
+    inputParameters.lookup("kS2_off")
 ); 
 
 // Kinetic Rates for E1
-dimensionedScalar Ke1_on
+dimensionedScalar kE1_on
 (
-    "Ke1_on",
+    "kE1_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Ke1_on")
+    inputParameters.lookup("kE1_on")
 ); 
-dimensionedScalar Ke1_off
+dimensionedScalar kE1_off
 (
-    "Ke1_off",
+    "kE1_off",
     dimless/dimTime,
-    inputParameters.lookup("Ke1_off")
+    inputParameters.lookup("kE1_off")
 ); 
 
 // Kinetic Rates for E2
-dimensionedScalar Ke2_on
+dimensionedScalar kE2_on
 (
-    "Ke2_on",
+    "kE2_on",
     dimVolume/dimMoles/dimTime,
-    inputParameters.lookup("Ke2_on")
+    inputParameters.lookup("kE2_on")
 ); 
-dimensionedScalar Ke2_off
+dimensionedScalar kE2_off
 (
-    "Ke2_off",
+    "kE2_off",
     dimless/dimTime,
-    inputParameters.lookup("Ke2_off")
+    inputParameters.lookup("kE2_off")
 ); 

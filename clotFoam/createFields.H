@@ -60,13 +60,13 @@ volScalarField eta
     mesh
 );
 
-// k_adh Field
-Info<< "Reading field Kadh\n" << endl;
-volScalarField Kadh
+// Hadh Field (defines adhesion region)
+Info<< "Reading field Hadh\n" << endl;
+volScalarField Hadh
 (
     IOobject
     (
-        "Kadh",
+        "Hadh",
         runTime.timeName(),
         mesh,
         IOobject::MUST_READ,
@@ -148,12 +148,13 @@ volScalarField Theta_B
 // Object for for platelets
 Species_platelet Plt
 (
-    num_plts,
-    Pmax, Kadh, KcohPmax,
-    eta, eta_ast, eta_t, g0, 
-    ADP, kADP_Pla, ADP_ast,
-    ke2_Pla, e2_ast,
-    Theta_T, Theta_B
+    pltConst.num_plts,
+    pltConst,
+    Hadh, 
+    eta,  
+    ADP, 
+    Theta_T, 
+    Theta_B
 );
 
 // Set ALL ptrList Sizes
@@ -251,7 +252,7 @@ Species_seBound seBound
 (
     num_seBound,
     injuryPatchID,
-    Kc0_on.value(), Kc0_off.value(), Kc0_cat.value()
+    kC0_on.value(), kC0_off.value(), kC0_cat.value()
 );
 
 // Set ALL ptrList Sizes
@@ -309,14 +310,14 @@ Species_fluidPhase fluidPhase
 (
     num_fluidPhase,
     N_Avo,
-    Ke1_on, 
-    Ke1_off,
-    Ke2_on, 
-    Ke2_off, 
-    Ks1_on, 
-    Ks1_off, 
-    Ks2_on, 
-    Ks2_off,
+    kE1_on, 
+    kE1_off,
+    kE2_on, 
+    kE2_off, 
+    kS1_on, 
+    kS1_off, 
+    kS2_on, 
+    kS2_off,
     N_1,
     N_2
 );
@@ -409,12 +410,12 @@ Species_pltBound pltBound
 (
     num_pltBound,
     N_Avo,
-    Kc1_on, Kc1_off, Kc1_cat,
-    Kc2_on, Kc2_off, Kc2_cat,
-    Ke1_on, Ke1_off,
-    Ke2_on, Ke2_off,
-    Ks1_on, Ks1_off,
-    Ks2_on, Ks2_off,
+    kC1_on, kC1_off, kC1_cat,
+    kC2_on, kC2_off, kC2_cat,
+    kE1_on, kE1_off,
+    kE2_on, kE2_off,
+    kS1_on, kS1_off,
+    kS2_on, kS2_off,
     N_1, N_2
 );
 

@@ -2,14 +2,14 @@ class Species_fluidPhase : public Species
 {
     private:
         const dimensionedScalar& N_Avo;
-        const dimensionedScalar& Ke1_on;
-        const dimensionedScalar& Ke1_off;
-        const dimensionedScalar& Ke2_on;
-        const dimensionedScalar& Ke2_off;
-        const dimensionedScalar& Ks1_on;
-        const dimensionedScalar& Ks1_off; 
-        const dimensionedScalar& Ks2_on;
-        const dimensionedScalar& Ks2_off; 
+        const dimensionedScalar& kE1_on;
+        const dimensionedScalar& kE1_off;
+        const dimensionedScalar& kE2_on;
+        const dimensionedScalar& kE2_off;
+        const dimensionedScalar& kS1_on;
+        const dimensionedScalar& kS1_off; 
+        const dimensionedScalar& kS2_on;
+        const dimensionedScalar& kS2_off; 
         const scalar& N_1; 
         const scalar& N_2; 
         Species *Plt {nullptr};
@@ -21,24 +21,24 @@ class Species_fluidPhase : public Species
         (
             const int& numSpecies_,
             const dimensionedScalar& N_Avo_,
-            const dimensionedScalar& Ke1_on_,
-            const dimensionedScalar& Ke1_off_,
-            const dimensionedScalar& Ke2_on_,
-            const dimensionedScalar& Ke2_off_,
-            const dimensionedScalar& Ks1_on_,
-            const dimensionedScalar& Ks1_off_,
-            const dimensionedScalar& Ks2_on_,
-            const dimensionedScalar& Ks2_off_,
+            const dimensionedScalar& kE1_on_,
+            const dimensionedScalar& kE1_off_,
+            const dimensionedScalar& kE2_on_,
+            const dimensionedScalar& kE2_off_,
+            const dimensionedScalar& kS1_on_,
+            const dimensionedScalar& kS1_off_,
+            const dimensionedScalar& kS2_on_,
+            const dimensionedScalar& kS2_off_,
             const scalar& N_1_, 
             const scalar& N_2_
         ) 
         : 
             Species(numSpecies_),
             N_Avo(N_Avo_),
-            Ke1_on(Ke1_on_), Ke1_off(Ke1_off_), 
-            Ke2_on(Ke2_on_), Ke2_off(Ke2_off_), 
-            Ks1_on(Ks1_on_), Ks1_off(Ks1_off_), 
-            Ks2_on(Ks2_on_), Ks2_off(Ks2_off_), 
+            kE1_on(kE1_on_), kE1_off(kE1_off_), 
+            kE2_on(kE2_on_), kE2_off(kE2_off_), 
+            kS1_on(kS1_on_), kS1_off(kS1_off_), 
+            kS2_on(kS2_on_), kS2_off(kS2_off_), 
             N_1(N_1_), N_2(N_2_)
         {}
 
@@ -89,23 +89,23 @@ class Species_fluidPhase : public Species
             const volScalarField& Pbse = Plt->field[3];
 
             // S1
-            k[0] = -1. * Ks1_on * (N_1 * (Pba + Pbse) / N_Avo
+            k[0] = -1. * kS1_on * (N_1 * (Pba + Pbse) / N_Avo
                    - (S1b + E1b + C1 + C2)) * S1
-                   + Ks1_off * S1b;
+                   + kS1_off * S1b;
 
             // S2
-            k[1] = -1. * Ks2_on * (N_2 * (Pba + Pbse) / N_Avo 
+            k[1] = -1. * kS2_on * (N_2 * (Pba + Pbse) / N_Avo 
                    - (S2b + E2b + C1 + C2))* S2 
-                   + Ks2_off * S2b;
+                   + kS2_off * S2b;
 
             // E1 (has additional reactions on SE through BC)
-            k[2] = -1. * Ke1_on * (N_1 * (Pba + Pbse) / N_Avo 
+            k[2] = -1. * kE1_on * (N_1 * (Pba + Pbse) / N_Avo 
                    - (S1b + E1b + C1 + C2))* E1 
-                   + Ke1_off * E1b;
+                   + kE1_off * E1b;
 
             // E2
-            k[3] = -1. * Ke2_on * (N_2 * (Pba + Pbse) / N_Avo 
+            k[3] = -1. * kE2_on * (N_2 * (Pba + Pbse) / N_Avo 
                    - (S2b + E2b + C1 + C2))* E2
-                   + Ke2_off * E2b;
+                   + kE2_off * E2b;
         }
 };

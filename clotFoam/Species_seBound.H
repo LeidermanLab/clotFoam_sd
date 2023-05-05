@@ -2,9 +2,9 @@ class Species_seBound : public Species
 {
     private:
         label injuryPatchID; 
-        const scalar Kc0_on; //value only, no dimensions!
-        const scalar Kc0_off; //value only, no dimensions!
-        const scalar Kc0_cat; //value only, no dimensions!
+        const scalar kC0_on; //value only, no dimensions!
+        const scalar kC0_off; //value only, no dimensions!
+        const scalar kC0_cat; //value only, no dimensions!
         Species *fluidPhase {nullptr};
 
     public: 
@@ -13,14 +13,14 @@ class Species_seBound : public Species
         (
             const int& numSpecies_,
             const label& injuryPatchID_,
-            const scalar Kc0_on_, 
-            const scalar Kc0_off_, 
-            const scalar Kc0_cat_
+            const scalar kC0_on_, 
+            const scalar kC0_off_, 
+            const scalar kC0_cat_
         ) 
         : 
             Species(numSpecies_), 
             injuryPatchID(injuryPatchID_),
-            Kc0_on(Kc0_on_), Kc0_off(Kc0_off_), Kc0_cat(Kc0_cat_)
+            kC0_on(kC0_on_), kC0_off(kC0_off_), kC0_cat(kC0_cat_)
         {}
 
         void setPtrs(Species& fluidPhase_)
@@ -65,12 +65,12 @@ class Species_seBound : public Species
             forAll(k[0].boundaryField()[injuryPatchID], faceI)
             {
                 k[0].boundaryFieldRef()[injuryPatchID][faceI] =
-                    -1.*Kc0_on * S1[faceI] * E0[faceI]
-                    + (Kc0_off + Kc0_cat) * C0[faceI];
+                    -1.*kC0_on * S1[faceI] * E0[faceI]
+                    + (kC0_off + kC0_cat) * C0[faceI];
             
                 k[1].boundaryFieldRef()[injuryPatchID][faceI] =
-                    Kc0_on * S1[faceI] * E0[faceI]
-                    - (Kc0_off + Kc0_cat)*C0[faceI];    
+                    kC0_on * S1[faceI] * E0[faceI]
+                    - (kC0_off + kC0_cat)*C0[faceI];    
             }     
         }
 };
