@@ -16,13 +16,13 @@ License
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more details.
+    for more deta_Bils.
 
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    clotFoam
+    clotFoam_sD
 
 Description
     This solver simulates blood clotting in any type of domain.
@@ -30,19 +30,21 @@ Description
     1) Fluid:  Transient solver for incompressible, laminar flow of Newtonian 
        fluid with an additional Darcy term
 
-        du/dt = - grad(p') - div[u*grad(u) - nu*grad(u)] - nu*alpha(theta_B)*u,
+        du/dt = - grad(p') - div[u*grad(u) - nu*grad(u)] - nu*alpha(theta_B_B)*u,
         div(u) = 0,
 
-    2) Platelet Aggregation: hindered transport of 4 platelet species with 
-       activation by ADP and thrombin (e2)
+    2) Platelet Aggregation: hindered transport of 7 platelet species with 
+       activation by ADP, thrombin (e2), and shear rate
        
-         dPmu/dt = - div[W(theta_T)*(u*Pmu - Dp*grad(Pmu))] 
-                   + Rmu(Pmu,Pma,Pba,Pbse),
-         dPma/dt = - div[W(theta_T)*(u*Pma - Dp*grad(Pma))] 
-                   + Rma(Pmu,Pma,Pba,Pbse),
-        dPba/dt  = Rba(Pmu,Pma,Pba,Pbse),
-        dPbse/dt = Rbse(Pmu,Pma,Pba,Pbse),
-       d[ADP]/dt = - div[u*[ADP] - Dp*grad([ADP])] + sigma_release(Pba,Pbse)
+         dPmu/dt = - div[W(theta_B_T)*(u*Pmu - Dp*grad(Pmu))] 
+                   + Rmu(Pmu,Pma,Pbvu,Pseu,Psea),
+         dPma/dt = - div[W(theta_B_T)*(u*Pma - Dp*grad(Pma))] 
+                   + Rma(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
+       dPbvu/dt  = Rbvu(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
+       dPbva/dt  = Rbva(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
+        dPseu/dt = Rseu(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
+        dPsea/dt = Rsea(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
+       d[ADP]/dt = - div[u*[ADP] - Dp*grad([ADP])] + sigma_release(Pbvu,Pbva)
 
     3) Coagulation: Thrombin (E2) generation via enzymatic reactions
     
@@ -61,8 +63,8 @@ Description
           specified in the $FOAM_CASE/0 directory for that species. 
 
 Author: David Montgomery 
-        PhD Candidate at Colorado School of Mines 2022
-        with help from Federico Municchi PhD and Karin Leiderman PhD
+        PhD Candidate at Colorado School of Mines 2023
+        with help from Dr. Federico Municchi and Dr. Karin Leiderman
 \*---------------------------------------------------------------------------*/
 
 // Classes from OpenFOAM

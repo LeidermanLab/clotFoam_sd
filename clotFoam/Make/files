@@ -1,3 +1,3 @@
-clotFoam.C
+clotFoam_sD.C
 
-EXE = $(FOAM_USER_APPBIN)/clotFoam
+EXE = $(FOAM_USER_APPBIN)/clotFoam_sD
