@@ -1,60 +1,22 @@
 class Species_pltBound : public Species
 {
     private:
-        const dimensionedScalar& N_Avo;
-        const dimensionedScalar& kC1_on;
-        const dimensionedScalar& kC1_off; 
-        const dimensionedScalar& kC1_cat;
-        const dimensionedScalar& kC2_on;
-        const dimensionedScalar& kC2_off; 
-        const dimensionedScalar& kC2_cat;
-        const dimensionedScalar& kE1_on;
-        const dimensionedScalar& kE1_off; 
-        const dimensionedScalar& kE2_on;
-        const dimensionedScalar& kE2_off; 
-        const dimensionedScalar& kS1_on;
-        const dimensionedScalar& kS1_off;
-        const dimensionedScalar& kS2_on;
-        const dimensionedScalar& kS2_off; 
-        const scalar& N_1; 
-        const scalar& N_2; 
+        const chemConstants& c;
         Species *Plt {nullptr};
         Species *fluidPhase {nullptr};
-        
-
+  
     public: 
         //- Constructor
         Species_pltBound
         (
             const int& numSpecies_,
-            const dimensionedScalar& N_Avo_,
-            const dimensionedScalar& kC1_on_, 
-            const dimensionedScalar& kC1_off_, 
-            const dimensionedScalar& kC1_cat_,
-            const dimensionedScalar& kC2_on_, 
-            const dimensionedScalar& kC2_off_, 
-            const dimensionedScalar& kC2_cat_,
-            const dimensionedScalar& kE1_on_, 
-            const dimensionedScalar& kE1_off_,
-            const dimensionedScalar& kE2_on_, 
-            const dimensionedScalar& kE2_off_,
-            const dimensionedScalar& kS1_on_, 
-            const dimensionedScalar& kS1_off_,
-            const dimensionedScalar& kS2_on_, 
-            const dimensionedScalar& kS2_off_,
-            const scalar& N_1_, 
-            const scalar& N_2_
+            const chemConstants& c_
         ) 
         : 
-            Species(numSpecies_), 
-            N_Avo(N_Avo_),
-            kC1_on(kC1_on_), kC1_off(kC1_off_), kC1_cat(kC1_cat_),
-            kC2_on(kC2_on_), kC2_off(kC2_off_), kC2_cat(kC2_cat_),
-            kE1_on(kE1_on_), kE1_off(kE1_off_),
-            kE2_on(kE2_on_), kE2_off(kE2_off_),
-            kS1_on(kS1_on_), kS1_off(kS1_off_),
-            kS2_on(kS2_on_), kS2_off(kS2_off_),
-            N_1(N_1_), N_2(N_2_)
+            Species(numSpecies_),
+            c(c_),
+            Plt(nullptr),
+            fluidPhase(nullptr)
         {}
 
         void setPtrs(Species& Plt_, Species& fluidPhase_)
@@ -105,41 +67,41 @@ class Species_pltBound : public Species
             const volScalarField& Pbse = Plt->input[3];
 
             // S1b
-            k[0] = kS1_on * (N_1 * (Pba + Pbse) / N_Avo
+            k[0] = c.kS1_on * (c.N_1 * (Pba + Pbse) / c.N_Avo
                    - (S1b + E1b + C1 + C2)) * S1
-                   - kS1_off * S1b
-                   - kC2_on * S1b * E2b
-                   + kC2_off * C2;
+                   - c.kS1_off * S1b
+                   - c.kC2_on * S1b * E2b
+                   + c.kC2_off * C2;
 
             // S2b
-            k[1] = kS2_on * (N_2 * (Pba + Pbse) / N_Avo 
+            k[1] = c.kS2_on * (c.N_2 * (Pba + Pbse) / c.N_Avo 
                    - (S2b + E2b + C1 + C2))* S2 
-                   - kS2_off * S2b 
-                   - kC1_on * S2b * E1b 
-                   + kC1_off*C1;
+                   - c.kS2_off * S2b 
+                   - c.kC1_on * S2b * E1b 
+                   + c.kC1_off*C1;
             
             // E1b
-            k[2] = kE1_on * (N_1 * (Pba + Pbse) / N_Avo 
+            k[2] = c.kE1_on * (c.N_1 * (Pba + Pbse) / c.N_Avo 
                    - (S1b + E1b + C1 + C2))* E1 
-                   - kE1_off * E1b
-                   - kC1_on * S2b * E1b
-                   + (kC1_off + kC1_cat)*C1
-                   + kC2_cat*C2;
+                   - c.kE1_off * E1b
+                   - c.kC1_on * S2b * E1b
+                   + (c.kC1_off + c.kC1_cat)*C1
+                   + c.kC2_cat*C2;
             
             // E2b
-            k[3] = kE2_on * (N_2 * (Pba + Pbse) / N_Avo 
+            k[3] = c.kE2_on * (c.N_2 * (Pba + Pbse) / c.N_Avo 
                    - (S2b + E2b + C1 + C2))* E2
-                   - kE2_off * E2b
-                   - kC2_on * S1b * E2b
-                   + (kC2_off + kC2_cat)*C2
-                   + kC1_cat * C1;
+                   - c.kE2_off * E2b
+                   - c.kC2_on * S1b * E2b
+                   + (c.kC2_off + c.kC2_cat)*C2
+                   + c.kC1_cat * C1;
 
             // C1
-            k[4] = kC1_on * S2b * E1b 
-                   -(kC1_off + kC1_cat)*C1;
+            k[4] = c.kC1_on * S2b * E1b 
+                   -(c.kC1_off + c.kC1_cat)*C1;
 
             // C2
-            k[5] = kC2_on * S1b * E2b 
-                   -(kC2_off + kC2_cat)*C2;
+            k[5] = c.kC2_on * S1b * E2b 
+                   -(c.kC2_off + c.kC2_cat)*C2;
         }
 };

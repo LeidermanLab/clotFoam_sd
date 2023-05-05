@@ -38,10 +38,6 @@ scalar pRefValue = 0.0;
 setRefCell(p, mesh.solutionDict().subDict("PISO"), pRefCell, pRefValue);
 mesh.setFluxRequired(p.name());
 
-// for openfoam-v10
-//setRefCell(p, mesh.solution().dict().subDict("PISO"), pRefCell, pRefValue);
-//mesh.schemes().setFluxRequired(p.name());
-
 /**************************************************************************
     Fields for Platelet Reactions
 ***************************************************************************/
@@ -252,7 +248,7 @@ Species_seBound seBound
 (
     num_seBound,
     injuryPatchID,
-    kC0_on.value(), kC0_off.value(), kC0_cat.value()
+    chemConst
 );
 
 // Set ALL ptrList Sizes
@@ -309,17 +305,7 @@ Info<< "Creating species object for fluidPhase Chemicals\n" << endl;
 Species_fluidPhase fluidPhase
 (
     num_fluidPhase,
-    N_Avo,
-    kE1_on, 
-    kE1_off,
-    kE2_on, 
-    kE2_off, 
-    kS1_on, 
-    kS1_off, 
-    kS2_on, 
-    kS2_off,
-    N_1,
-    N_2
+    chemConst
 );
 
 // Set ALL ptrList Sizes
@@ -409,14 +395,7 @@ Info<< "Reading PtrList for pltBound\n" << endl;
 Species_pltBound pltBound
 (
     num_pltBound,
-    N_Avo,
-    kC1_on, kC1_off, kC1_cat,
-    kC2_on, kC2_off, kC2_cat,
-    kE1_on, kE1_off,
-    kE2_on, kE2_off,
-    kS1_on, kS1_off,
-    kS2_on, kS2_off,
-    N_1, N_2
+    chemConst
 );
 
 // Set ALL ptrList Sizes
