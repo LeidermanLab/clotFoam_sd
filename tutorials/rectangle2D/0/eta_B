@@ -9,11 +9,11 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
-    object      sigma_release;
+    object      eta_B;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 -3 -1 0 1 0 0];
+dimensions      [0 0 0 0 0 0 0];
 
 internalField   uniform 0;
 

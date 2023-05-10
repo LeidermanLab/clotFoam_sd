@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     // Set necessary pointers for each species
     #include "setSpeciesPointers.H"
     
-    // Calculate initial Theta_T, Theta_B
+    // Calculate initial Theta_T, Theta_B, Theta_F
     Plt.updateFractions();
 
     //--- Start time loop
@@ -140,6 +140,9 @@ int main(int argc, char *argv[])
         // Solve the Navier-Stokes-Brinkman Equations
         #include "solveFluids.H"
 
+        // Calculate shearRate (used in shear-dependent fxns for Plt reactions)
+        shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
+
         // Transport the platelets dp/dt = - div(W*J)
         #include "plateletTransport.H" // Transport the mobile platelets
 
@@ -163,7 +166,8 @@ int main(int argc, char *argv[])
         {
             Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
                 << "  ClockTime = " << runTime.elapsedClockTime() << " s"
-                << nl << endl;
+                << endl;
+            Info<< "max(shearRate) = "<< max(shearRate).value() <<" 1/s"<< nl << endl;
         }
 
         // Check if solution is diverging

@@ -60,6 +60,7 @@
 
         PltTransportEqn.relax();
         PltTransportEqn.solve();
+        Plt.field[i] = max(0*Plt.field[i], Plt.field[i]);
         Plt.field[i].correctBoundaryConditions();
     }
 }

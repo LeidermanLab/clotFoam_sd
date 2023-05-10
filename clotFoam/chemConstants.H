@@ -20,7 +20,7 @@ struct chemConstants
     {
         readScalar(inputParameters.lookup("N_2"))
     };
-
+    
     // Kinetic Rates for C0
     dimensionedScalar kC0_on
     {

@@ -46,33 +46,64 @@ inletShearRate 1000.0; // inlet shear rate [1/s]
 Pv0 0.0; // outlet kinematic pressure [mm^2 / s^2]
 
 /* ------------------------------------------------------------------------- *\
+   Reaction time-step parameter
+\*---------------------------------------------------------------------------*/
+M_rxn 2; // Number of time steps for reactions solve: h_react = dt / M_react
+
+/* ------------------------------------------------------------------------- *\
    Platelet Parameters
 \*---------------------------------------------------------------------------*/
-num_plts 4; // Total Number of platelet species (Integer)
+num_plts 7; // Total Number of platelet species (Integer)
 num_plts_mobile 2; // Number of mobile platelet species (for transport solve)
-M_rxn 2; // Number of time steps for reactions solve: h_react = dt / M_react
 Pdiam 3.0e-03; // Diameter of one platelet [mm]
 Pmax 6.67e+07; // Maxiumum packing density [1 / mm^3]
 Dp 2.5e-05; // Diffusion rate for platelets [mm^2 / s]
 Plt_0 2.5e+05; // Mobile platelet inlet number density [1 / mm^3]
-t0_Plt 0.005; // When the platelets start to enter the domain
-tf_Plt 0.02; // When the platelets reach Plt_0 at inlet
+t0_Plt 0.01; // When the platelets start to enter the domain
+tf_Plt 0.2; // When the platelets reach Plt_0 at inlet
 
 // Platelet Adhesion Params
-kAdh 3.3212e-08; // rate of adhesion [mm^3 / s]
 kAdh_len #calc "$w_inj"; // Length of the adhesion region [mm]
+kAdhCol 3.3212e-08; // on-rate of adhesion via collagen [mm^3 / s]
+kAdhVwfOn 3.3212e-08; // on-rate of adhesion via vWF [mm^3 / s]
+kAdhVwfOff #calc "5.0*$kAdhVwfOn*$Plt_0"; // off-rate of adhesion via vWF [1 / s]
 
 // Platelet Cohesion Params
-kCohPmax 1.0e+4; // Cohesion constant times Pmax [1/s]
-eta_t 0.1; // threshold value for g(eta) [nondim]
-eta_ast 0.4; // eta_ast + eta_t = 0.25 - 0.75 [nondim]
-l_D_eta #calc "2.0*$Pdiam"; // length of "diffusion" for eta [mm]
+kCohVwfOnPmax 1.0e+4; // on-rate of cohesion via vWF [1/s]
+kCohVwfOff $kAdhVwfOff; // // off-rate of cohesion via vWF [1/s]
+kCohFbgOnPmax 1.0e+4; // on-rate of cohesion via Fibrinogen [1/s] 
 
 // Platelet Activation Params
-kADP_Pla 0.34; // Platelet activation rate by ADP [1/s]
-kE2_Pla 0.5; // Platelet activation rate by thrombin [1/s]
+kActVwf 0.34; // Platelet activation rate by shear on vWF [1/s]
+kActADP 0.34; // Platelet activation rate by ADP [1/s]
 ADP_ast 2.0e-03; // Critical concentration of ADP [nanomol / mm^3]
+kActE2 0.5; // Platelet activation rate by thrombin [1/s]
 E2_ast 1.0e-06; // Critical concentration of thrombin [nanomol / mm^3]
+
+// Parameters for virtual substance eta
+eta_t 0.1; // threshold value for g(eta) [dimless]
+eta_ast 0.4; // eta_ast + eta_t = 0.25 - 0.75 [dimless]
+l_D_eta #calc "2.0*$Pdiam"; // length of "diffusion" for eta [mm]
+
+// Parameters for shear-dependent phenomenological functions S(\dot\gamma)
+sAdhOn_C 500.0; // Critical shear rate for sAdhOn [1/s]
+sigmaAdhOn 2.8; // Steepness parameter for sAdhOn [dimless]
+
+sAdhOff_C 1000.0; // Critical shear rate for sAdhOff [1/s]
+sAdhOff_a1 -1.01; // Shape parameter for sAdhOff function [dimless]
+sAdhOff_a2 0.34; // Shape parameter for sAdhOff function [dimless]
+sAdhOff_a3 -3.44; // Shape parameter for sAdhOff function [dimless]
+
+sCohOn_C 500.0; // Critical shear rate for sCohOn [1/s]
+sigmaCohOn 2.8; // Steepness parameter for sCohOn [dimless]
+
+sCohOff_C 1000.0; // Critical shear rate for sCohOff [1/s]
+sCohOff_a1 -1.01; // Shape parameter for sCohOff [dimless]
+sCohOff_a2 0.34; // Shape parameter for sCohOff [dimless]
+sCohOff_a3 -3.44; // Shape parameter for sCohOff [dimless]
+
+sAct_C 1000.0; // Critical shear rate for sAct [1/s]
+sigmaAct 5.0; // Steepness parameter for sAct [dimless]
 
 /* ------------------------------------------------------------------------- *\
    ADP Parameters

@@ -13,7 +13,8 @@ if ( max(Theta_T).value() > 1.01 )
 {
     
     Info<< "!!! Total Platelet Fraction Exceeds 1.01 !!!" <<endl;
-    Info<< "\n!!!!! max(Theta_T) > 1.01 at t = " << 
+    Info<< "\n!!!!! max(Theta_T) = "<< max(Theta_T).value()
+    <<" > 1.01 at t = " << 
     runTime.time().value() << " !!!!!"<< endl;
     FatalError<< nl << exit(FatalError);
 }

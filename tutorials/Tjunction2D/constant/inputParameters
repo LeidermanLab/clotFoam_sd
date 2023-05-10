@@ -81,13 +81,13 @@ kAdh_len $l_se; // Length of the adhesion region [mm]
 
 // Platelet Cohesion Params
 kCohPmax 1.0e+4; // Cohesion constant times Pmax [1/s]
-eta_t 0.1; // threshold value for g(eta) [nondim]
-eta_ast 0.4; // eta_ast_val + eta_t_val = 0.25 - 0.75 [nondim]
+eta_t 0.1; // threshold value for g(eta) [dimless]
+eta_ast 0.4; // eta_ast_val + eta_t_val = 0.25 - 0.75 [dimless]
 l_D_eta #calc "2.0*$Pdiam"; // length of "diffusion" for eta [mm]
 
 // Platelet Activation Params
-kADP_Pla 0.34; // Platelet activation rate by ADP [1/s]
-kE2_Pla 0.5; // Platelet activation rate by thrombin [1/s]
+kActADP 0.34; // Platelet activation rate by ADP [1/s]
+kActE2 0.5; // Platelet activation rate by thrombin [1/s]
 ADP_ast 2.0e-03; // Critical concentration of ADP [nanomol / mm^3]
 E2_ast 1.0e-06; // Critical concentration of thrombin [nanomol / mm^3]
 

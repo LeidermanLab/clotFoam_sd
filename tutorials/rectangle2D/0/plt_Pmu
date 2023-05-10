@@ -82,6 +82,30 @@ boundaryField
                 ).lookup("Zdir")
             );
 
+            // Time when mobile platelets start entering domain t0_Plt
+            const scalar t0 = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("t0_Plt")
+            );
+
+            // Time when mobile platelets integrate to Plt_0, tf_Plt
+            const scalar tf = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("tf_Plt")
+            );
+
+            // Slope for ramping of inlet condition
+            scalar m = 1./(tf - t0);
+            // T = max(0, min(1, m*(t-t0) ))
+            scalar T = m*(this->db().time().value() - t0);
+            T = max(0., min(1.,T));
+
             //--- Determine scale K for shape function (amplitude near wall)
             scalar K = 0.; // K = 0 provides uniform profile
             if ( mag(shr_rt - 500.) < 1.e-10 ) // shr_rt = 500 1/s
@@ -129,7 +153,7 @@ boundaryField
 
             //--- Set the field values at the inlet
             scalar C0 = y_max/intgrl_s;
-            operator == (Plt_0 * C0 * s); 
+            operator == (T*Plt_0 * C0 * s); 
    
             /*
             // check that the integral of the profile = integral Plt_0

@@ -37,28 +37,68 @@ struct plateletConstants
         inputParameters.lookup("Dp")
     };
 
-    // Platelet adhesion binding rate
-    dimensionedScalar kAdh
+    // Platelet adhesion binding on-rate via collagen
+    dimensionedScalar kAdhCol
     {
-        "kAdh",
+        "kAdhCol",
         dimVolume/dimTime,
-        inputParameters.lookup("kAdh")
+        inputParameters.lookup("kAdhCol")
     };
 
-    // Platelet Cohesion binding rate
-    dimensionedScalar kCohPmax
+    // Platelet adhesion binding on-rate via vWF
+    dimensionedScalar kAdhVwfOn
     {
-        "kCohPmax",
-        dimless/dimTime,
-        inputParameters.lookup("kCohPmax")
+        "kAdhVwfOn",
+        dimVolume/dimTime,
+        inputParameters.lookup("kAdhVwfOn")
     };
 
-    // Platelet activation rate by ADP k_{adp}^{pla}
-    dimensionedScalar kADP_Pla
+    // Platelet adhesion binding off-rate via vWF
+    dimensionedScalar kAdhVwfOff
     {
-        "kADP_Pla",
+        "kAdhVwfOff",
         dimless/dimTime,
-        inputParameters.lookup("kADP_Pla")
+        inputParameters.lookup("kAdhVwfOff")
+    };
+
+    // Platelet cohesion binding on-rate via vWF
+    dimensionedScalar kCohVwfOnPmax
+    {
+        "kCohVwfOnPmax",
+        dimless/dimTime,
+        inputParameters.lookup("kCohVwfOnPmax")
+    };
+
+    // Platelet cohesion binding off-rate via vWF
+    dimensionedScalar kCohVwfOff
+    {
+        "kCohVwfOff",
+        dimless/dimTime,
+        inputParameters.lookup("kCohVwfOff")
+    };
+
+    // Platelet cohesion binding on-rate via fibrinogen
+    dimensionedScalar kCohFbgOnPmax
+    {
+        "kCohFbgOnPmax",
+        dimless/dimTime,
+        inputParameters.lookup("kCohFbgOnPmax")
+    };
+
+    // Platelet activation via vWF/shear
+    dimensionedScalar kActVwf
+    {
+        "kActVwf",
+        dimless/dimTime,
+        inputParameters.lookup("kActVwf")
+    };
+
+    // Platelet activation rate by ADP k_{act}^{ADP}
+    dimensionedScalar kActADP
+    {
+        "kActADP",
+        dimless/dimTime,
+        inputParameters.lookup("kActADP")
     };
 
     // Critical concentration of ADP [ADP]^\ast for platelet activation
@@ -69,12 +109,12 @@ struct plateletConstants
         inputParameters.lookup("ADP_ast")
     };
 
-    // Platelet activation rate by thrombin k_{e2}^{pla}
-    dimensionedScalar kE2_Pla
+    // Platelet activation rate by thrombin k_{act}^{E2}
+    dimensionedScalar kActE2
     {
-        "kE2_Pla",
+        "kActE2",
         dimless/dimTime,
-        inputParameters.lookup("kE2_Pla")
+        inputParameters.lookup("kActE2")
     };
 
     // Critcal concentration of thrombin for platelet activation
@@ -111,6 +151,102 @@ struct plateletConstants
         ( Foam::pow(eta_ast,3.0) 
                 + Foam::pow(1.0 - eta_t,3.0) ) 
                / Foam::pow(1.0-eta_t, 3.0)
+    };
+
+    // Critical shear rate for sAdhOn (platelet adhesion on-rate)
+    dimensionedScalar sAdhOn_C
+    {
+        "sAdhOn_C",
+        dimless/dimTime,
+        inputParameters.lookup("sAdhOn_C")
+    };
+
+    // Steepness parameter for sAdhOn function    
+    scalar sigmaAdhOn
+    {
+        readScalar(inputParameters.lookup("sigmaAdhOn"))
+    };
+
+    // Critical shear rate for sAdhOff (platelet adhesion off-rate)
+    dimensionedScalar sAdhOff_C
+    {
+        "sAdhOff_C",
+        dimless/dimTime,
+        inputParameters.lookup("sAdhOff_C")
+    };
+
+    // Shape parameters for sAdhOff function a1
+    scalar sAdhOff_a1
+    {
+        readScalar(inputParameters.lookup("sAdhOff_a1"))
+    };
+
+    // Shape parameters for sAdhOff function a2
+    scalar sAdhOff_a2
+    {
+        readScalar(inputParameters.lookup("sAdhOff_a2"))
+    };
+
+    // Shape parameters for sAdhOff function a3
+    scalar sAdhOff_a3
+    {
+        readScalar(inputParameters.lookup("sAdhOff_a3"))
+    };
+
+    // Critical shear rate for sCohOn (platelet cohesion on-rate)
+    dimensionedScalar sCohOn_C
+    {
+        "sCohOn_C",
+        dimless/dimTime,
+        inputParameters.lookup("sCohOn_C")
+    };
+
+    // Steepness parameter for sCohOn function    
+    scalar sigmaCohOn
+    {
+        readScalar(inputParameters.lookup("sigmaCohOn"))
+    };
+
+    // Critical shear rate for sCohOff (platelet adhesion on-rate)
+    dimensionedScalar sCohOff_C
+    {
+        "sCohOff_C",
+        dimless/dimTime,
+        inputParameters.lookup("sCohOff_C")
+    };
+
+    // Shape parameters for sCohOff function a1
+    scalar sCohOff_a1
+    {
+        readScalar(inputParameters.lookup("sCohOff_a1"))
+    };
+
+    // Shape parameters for sCohOff function a2
+    scalar sCohOff_a2
+    {
+        readScalar(inputParameters.lookup("sCohOff_a2"))
+    };
+
+    // Shape parameters for sCohOff function a3
+    scalar sCohOff_a3
+    {
+        readScalar(inputParameters.lookup("sCohOff_a3"))
+    };
+
+
+    // Critical shear rate for sAct (platelet activation by shear)
+    dimensionedScalar sAct_C
+    {
+        "sAct_C",
+        dimless/dimTime,
+        inputParameters.lookup("sAct_C")
+    };
+
+    
+    // Steepness parameter for sAct function    
+    scalar sigmaAct
+    {
+        readScalar(inputParameters.lookup("sigmaAct"))
     };
 
     /***********************************************************************
