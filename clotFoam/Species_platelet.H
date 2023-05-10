@@ -66,9 +66,9 @@ class Species_platelet : public Species
         // Activation hill function for any concentration C, given rate kC_Pla & C_ast
         volScalarField A
         (
-            const dimensionedScalar& kC_Pla, 
-            const dimensionedScalar& C_ast, 
-            const volScalarField& C // (ADP or e2)
+            const dimensionedScalar& kC_Pla, // Kinitec Rate Constant
+            const dimensionedScalar& C_ast, // Critical Value
+            const volScalarField& C // Concentration
         )
         {
             return kC_Pla * max(0.*C, C) / (C_ast + max(0.*C,C) );
@@ -163,11 +163,23 @@ class Species_platelet : public Species
             const volScalarField& E2 = fluidPhase->field[3];
 
             // Temporary volScalarFields
-            const volScalarField S_AdhOn = sAdhOn();
+            //const volScalarField S_AdhOn = sAdhOn();
+            const volScalarField S_AdhOn
+            (
+                A(c.kAdhVwfOn/c.kAdhVwfOn, c.sAdhOn_C, shearRate)
+            );
             const volScalarField S_AdhOff = sAdhOff();
-            const volScalarField S_CohOn = sCohOn();
+            //const volScalarField S_CohOn = sCohOn();
+            const volScalarField S_CohOn
+            (
+                A(c.kCohVwfOnPmax/c.kCohVwfOnPmax, c.sCohOn_C, shearRate)
+            );
             const volScalarField S_CohOff = sCohOff();
-            const volScalarField S_Act = sAct();
+            //const volScalarField S_Act = sAct();
+            const volScalarField S_Act
+            (
+                A(c.kActVwf/c.kActVwf,c.sAct_C,shearRate)
+            );
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,ADP);
             const volScalarField A_E2 = A(c.kActE2,c.E2_ast,E2);
             const volScalarField gEtaB = g(eta_B);

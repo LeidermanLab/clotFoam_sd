@@ -22,13 +22,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         1;
+endTime         20;
 
 deltaT          1e-5;
 
 writeControl    adjustableRunTime;
 
-writeInterval   0.1; 
+writeInterval   1; 
 
 purgeWrite      0;
 
@@ -110,7 +110,7 @@ functions
         );
         writeOption     anyWrite;
         writeControl    writeTime;
-        writeInterval   2;
+        writeInterval   1;
     }
 }
 
