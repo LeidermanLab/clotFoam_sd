@@ -36,8 +36,9 @@ boundaryField
         #{
             /*
              Near-wall excess platelet profile motivated by Eckstein 1991
-             Pmu = Plt_0 * C0 * s(x,z), 
-             where s(x,z) = 1 + K*Rx(x)^18 * (1 - Rx(x))
+             Pmu = T(t) * Plt_0 * C0 * s(x,z), 
+             where T(t) is a ramp function for scaling the IC over (t0,tf),
+                  s(x,z) = 1 + K*Rx(x)^18 * (1 - Rx(x))
                             + K*Rz(z)^18 * (1 - Rz(z))
                    Rx(x) = abs(x - x0 - rx) / rx , 
                       rx = radius of vessel in x-dir: w_chan/2,
@@ -96,6 +97,35 @@ boundaryField
             scalar rx = w_chan/2.; // radius in x-direction
             scalar rz = h_chan/2.; // radius in z-direction
 
+            // Time when mobile platelets start entering domain t0_Plt
+            const scalar t0 = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("t0_Plt")
+            );
+
+            // Time when mobile platelets integrate to Plt_0, tf_Plt
+            const scalar tf = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("tf_Plt")
+            );
+
+            // Function for ramping initial condition over time
+            scalar T = 1.;
+            if(abs(tf-t0) > 1.0e-10)
+            {
+                // Slope for ramping of inlet condition
+                scalar m = 1./(tf - t0);
+                // T = max(0, min(1, m*(t-t0) ))
+                T = m*(this->db().time().value() - t0);
+                T = max(0., min(1.,T));
+            }
+
             // Get initial shape of profile
             forAll(Cf,faceI)
             {
@@ -130,7 +160,7 @@ boundaryField
 
             // Set the field values at the inlet
             scalar C0 = h_chan * w_chan / intgrl_s;
-            operator == (Plt_0 * C0 * s); 
+            operator == (T * Plt_0 * C0 * s); 
 
             /*
             // check that the integral of the profile = integral Plt_0

@@ -29,8 +29,9 @@ boundaryField
         #{
         /*
              Near-wall excess platelet profile motivated by Eckstein 1991
-             Pmu = Plt_0 * C0 * s(y), 
-             where s(y) = 1 + K*R(y)^18 * (1 - R), 
+             Pmu = T(t) * Plt_0 * C0 * s(y), 
+             where T(t) is a ramp function for scaling the IC over (t0,tf),
+                   s(y) = 1 + K*R(y)^18 * (1 - R), 
                    R(y) = abs(y - r) / r, 
                       r = radius of vessel,
                    1/C0 = 1 / d * integral( s(y)*dy ),
@@ -100,11 +101,16 @@ boundaryField
                 ).lookup("tf_Plt")
             );
 
-            // Slope for ramping of inlet condition
-            scalar m = 1./(tf - t0);
-            // T = max(0, min(1, m*(t-t0) ))
-            scalar T = m*(this->db().time().value() - t0);
-            T = max(0., min(1.,T));
+            // Function for ramping initial condition over time
+            scalar T = 1.;
+            if(abs(tf-t0) > 1.0e-10)
+            {
+                // Slope for ramping of inlet condition
+                scalar m = 1./(tf - t0);
+                // T = max(0, min(1, m*(t-t0) ))
+                T = m*(this->db().time().value() - t0);
+                T = max(0., min(1.,T));
+            }
 
             //--- Determine scale K for shape function (amplitude near wall)
             scalar K = 0.; // K = 0 provides uniform profile

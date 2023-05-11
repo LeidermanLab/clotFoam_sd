@@ -63,7 +63,7 @@ t0_Plt 0.01; // When the platelets start to enter the domain
 tf_Plt 0.2; // When the platelets reach Plt_0 at inlet
 
 // Platelet Adhesion Params
-kAdh_len #calc "$w_inj"; // Length of the adhesion region [mm]
+kAdh_len $w_inj; // Length of the adhesion region [mm]
 kAdhCol 3.3212e-08; // on-rate of adhesion via collagen [mm^3 / s]
 kAdhVwfOn 3.3212e-08; // on-rate of adhesion via vWF [mm^3 / s]
 kAdhVwfOff #calc "$kAdhVwfOn * $Plt_0"; // off-rate of adhesion via vWF [1 / s]

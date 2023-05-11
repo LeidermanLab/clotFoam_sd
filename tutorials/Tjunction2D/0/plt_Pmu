@@ -29,8 +29,8 @@ boundaryField
         #{
             /*
              Near-wall excess platelet profile motivated by Eckstein 1991
-             Pmu = Plt_0 * C0 * s(y), 
-             where s(y) = 1 + K*R(y)^18 * (1 - R), 
+             Pmu = T(t) * Plt_0 * C0 * s(y), 
+             where T(t) is a ramp function for scaling the IC over (t0,tf), 
                    R(y) = abs(y - r) / r, 
                       r = radius of vessel,
                    1/C0 = 1 / d * integral( s(y)*dy ),
@@ -90,6 +90,35 @@ boundaryField
                 ).lookup("Zdir")
             );
 
+            // Time when mobile platelets start entering domain t0_Plt
+            const scalar t0 = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("t0_Plt")
+            );
+
+            // Time when mobile platelets integrate to Plt_0, tf_Plt
+            const scalar tf = readScalar
+            (
+                db().lookupObject<IOdictionary>
+                (
+                    "inputParameters"
+                ).lookup("tf_Plt")
+            );
+
+            // Function for ramping initial condition over time
+            scalar T = 1.;
+            if(abs(tf-t0) > 1.0e-10)
+            {
+                // Slope for ramping of inlet condition
+                scalar m = 1./(tf - t0);
+                // T = max(0, min(1, m*(t-t0) ))
+                T = m*(this->db().time().value() - t0);
+                T = max(0., min(1.,T));
+            }
+
             //--- Determine scale K for shape function (amplitude near wall)
             scalar K = 0.; // K = 0 provides uniform profile
             if ( mag(shr_rt - 500.) < 1.e-10 ) // shr_rt = 500 1/s
@@ -138,7 +167,7 @@ boundaryField
 
             // Set the field values at the inlet
             scalar C0 = d / intgrl_s;
-            operator == (Plt_0 * C0 * s); 
+            operator == (T * Plt_0 * C0 * s); 
 
             /*
             // check that the integral of the profile = integral Plt_0

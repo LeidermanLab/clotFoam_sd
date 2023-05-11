@@ -72,7 +72,7 @@ volScalarField eta_B
 );
 
 // Virtual substance secreted from eligible fibrinogen bound Platelets
-Info<< "Reading field eta_F\n" << endl;
+Info<< "Reading/creating field eta_F\n" << endl;
 volScalarField eta_F
 (
     IOobject
@@ -83,7 +83,8 @@ volScalarField eta_F
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*eta_B
+    0.0*eta_B,
+    eta_B.boundaryField().types()
 );
 
 // Hadh Field (defines adhesion region)
@@ -105,7 +106,7 @@ volScalarField Hadh
     Platelet Fraction Fields
 ***************************************************************************/
 // Total Platelet Fraction
-Info<< "Reading field Theta_T\n" << endl;
+Info<< "Reading/creating field Theta_T\n" << endl;
 volScalarField Theta_T
 (
     IOobject
@@ -113,14 +114,14 @@ volScalarField Theta_T
         "Theta_T",
         runTime.timeName(),
         mesh,
-        IOobject::MUST_READ,
+        IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    mesh
+    0.0*eta_B
 );
 
 // Bound Platelet Fraction
-Info<< "Reading field Theta_B\n" << endl;
+Info<< "Reading/creating field Theta_B\n" << endl;
 volScalarField Theta_B
 (
     IOobject
@@ -131,11 +132,11 @@ volScalarField Theta_B
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*Theta_T
+    0.0*eta_B
 );
 
 // Fibrinogen Bound Platelet Fraction
-Info<< "Reading field Theta_F\n" << endl;
+Info<< "Reading/creating field Theta_F\n" << endl;
 volScalarField Theta_F
 (
     IOobject
@@ -146,16 +147,14 @@ volScalarField Theta_F
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*Theta_T
+    0.0*eta_B
 );
-
-
 
 /**************************************************************************
     Fields for ADP and ADP source term
 ***************************************************************************/
 // ADP Field
-Info<< "Reading field ADP\n" << endl;
+Info<< "Reading/creating field ADP\n" << endl;
 volScalarField ADP
 (
     IOobject
@@ -172,7 +171,7 @@ volScalarField ADP
 );
 
 // sigma_release Field
-Info<< "Reading field sigma_release\n" << endl;
+Info<< "Reading/creating field sigma_release\n" << endl;
 volScalarField sigma_release
 (
     IOobject
@@ -223,6 +222,7 @@ Species_platelet Plt
 Plt.setPtrListSize();
 
 // Mobile Unactivated Platelet Field
+Info<< "Reading field plt_Pmu\n" << endl;
 Plt.field.set
 (
     0,
@@ -241,6 +241,7 @@ Plt.field.set
 );
 
 // Mobile Activated Platelet Field
+Info<< "Reading field plt_Pma\n" << endl;
 Plt.field.set
 (    
     1,
@@ -259,7 +260,7 @@ Plt.field.set
 );
 
 // vWF Bound Unactivated Platelet Field
-Info<< "Reading field Pbvu\n" << endl;
+Info<< "Reading/creating field plt_Pbvu\n" << endl;
 Plt.field.set
 (
     2,
@@ -270,15 +271,15 @@ Plt.field.set
             "plt_Pbvu",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        0.0*Plt.field[1]
     )
 );
 
 // vWF Bound Activated Platelet Field
-Info<< "Reading field Pbva\n" << endl;
+Info<< "Reading/creating field plt_Pbva\n" << endl;
 Plt.field.set
 (
     3,
@@ -289,15 +290,15 @@ Plt.field.set
             "plt_Pbva",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        0.0*Plt.field[1]
     )
 );
 
 // Fibrinogen Bound Activated Platelet Field
-Info<< "Reading field Pbfa\n" << endl;
+Info<< "Reading/creating field plt_Pbfa\n" << endl;
 Plt.field.set
 (
     4,
@@ -308,15 +309,15 @@ Plt.field.set
             "plt_Pbfa",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        0.0*Plt.field[1]
     )
 );
 
 // Subendothelial-Bound Unactivated Platelet Field
-Info<< "Reading field Pseu\n" << endl;
+Info<< "Reading/creating field plt_Pseu\n" << endl;
 Plt.field.set
 (
     5, 
@@ -327,15 +328,15 @@ Plt.field.set
             "plt_Pseu",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        0.0*Plt.field[1]
     )
 );
 
 // Subendothelial-Bound Anactivated Platelet Field
-Info<< "Reading field Psea\n" << endl;
+Info<< "Reading/creating field plt_Psea\n" << endl;
 Plt.field.set
 (
     6, 
@@ -346,10 +347,10 @@ Plt.field.set
             "plt_Psea",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        0.0*Plt.field[1]
     )
 );
 
@@ -381,6 +382,7 @@ Species_seBound seBound
 seBound.setPtrListSize();
 
 // E0 (TF:VIIa)
+Info<< "Reading field seBound_E0\n" << endl;
 seBound.field.set
 (
     0,
@@ -399,6 +401,7 @@ seBound.field.set
 );
 
 // C0 
+Info<< "Reading field seBound_C0\n" << endl;
 seBound.field.set
 (    
     1,
@@ -447,6 +450,7 @@ Species_fluidPhase fluidPhase
 fluidPhase.setPtrListSize();
 
 // S1 (FV and FX)
+Info<< "Reading field fluidPhase_S1\n" << endl;
 fluidPhase.field.set
 (
     0,
@@ -465,6 +469,7 @@ fluidPhase.field.set
 );
 
 // S2 (Prothrombin)
+Info<< "Reading field fluidPhase_S2\n" << endl;
 fluidPhase.field.set
 (
     1,
@@ -483,6 +488,7 @@ fluidPhase.field.set
 );
 
 // E1 (FXa)
+Info<< "Reading field fluidPhase_E1\n" << endl;
 fluidPhase.field.set
 (    
     2,
@@ -501,6 +507,7 @@ fluidPhase.field.set
 );
 
 // E2 (thrombin)
+Info<< "Reading field fluidPhase_E2\n" << endl;
 fluidPhase.field.set
 (    
     3,
@@ -547,6 +554,7 @@ Species_pltBound pltBound
 pltBound.setPtrListSize();
 
 // S1b (FV)
+Info<< "Reading field pltBound_S1b\n" << endl;
 pltBound.field.set
 (
     0,
@@ -565,6 +573,7 @@ pltBound.field.set
 );
 
 // S2b (Prothrombin)
+Info<< "Reading/creating field pltBound_S2b\n" << endl;
 pltBound.field.set
 (
     1,
@@ -575,14 +584,15 @@ pltBound.field.set
             "pltBound_S2b",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,                                      
+            IOobject::READ_IF_PRESENT,                                      
             IOobject::AUTO_WRITE
         ),  
-        mesh
+        0.0*pltBound.field[0]
     )   
 );
 
 // E1b (Prothrombinase)
+Info<< "Reading/creating field pltBound_E1b\n" << endl;
 pltBound.field.set
 (    
     2,
@@ -593,14 +603,15 @@ pltBound.field.set
             "pltBound_E1b",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,                                      
             IOobject::AUTO_WRITE
-        ),
-        mesh
+        ),  
+        0.0*pltBound.field[0]
     )
 );
 
 // E2b (Bound Thrombin)
+Info<< "Reading/creating field pltBound_E2b\n" << endl;
 pltBound.field.set
 (    
     3,
@@ -611,14 +622,15 @@ pltBound.field.set
             "pltBound_E2b",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,                                      
             IOobject::AUTO_WRITE
-        ),
-        mesh
+        ),  
+        0.0*pltBound.field[0]
     )
 );
 
 // C1 (S2b:E1b)
+Info<< "Reading/creating field pltBound_C1\n" << endl;
 pltBound.field.set
 (    
     4,
@@ -629,14 +641,15 @@ pltBound.field.set
             "pltBound_C1",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,                                      
             IOobject::AUTO_WRITE
-        ),
-        mesh
+        ),  
+        0.0*pltBound.field[0]
     )
 );
 
 // C2 (S1b:E2b)
+Info<< "Reading/creating field pltBound_C2\n" << endl;
 pltBound.field.set
 (    
     5,
@@ -647,10 +660,10 @@ pltBound.field.set
             "pltBound_C2",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::READ_IF_PRESENT,                                      
             IOobject::AUTO_WRITE
-        ),
-        mesh
+        ),  
+        0.0*pltBound.field[0]
     )
 );
 

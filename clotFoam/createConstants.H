@@ -50,7 +50,7 @@ plateletConstants pltConst(inputParameters);
 /**************************************************************************
     Constants for ADP
 ***************************************************************************/
-Info<< "\nReading constants for ADP and sigma_release\n" << endl;
+Info<< "Reading constants for ADP and sigma_release\n" << endl;
 // ADP Diffusion Constant
 dimensionedScalar D_ADP
 (
@@ -131,6 +131,6 @@ dimensionedScalar Dc
  the code easier to modify for more complex platelet/coagulation models. 
 ***************************************************************************/
 // Create an instance of chemConstants for passing to various classes
-Info<< "\nCreating an instance of chemConstants\n" << endl;
+Info<< "Creating an instance of chemConstants\n" << endl;
 chemConstants chemConst(inputParameters);
 
