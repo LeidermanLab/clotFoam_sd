@@ -163,23 +163,11 @@ class Species_platelet : public Species
             const volScalarField& E2 = fluidPhase->field[3];
 
             // Temporary volScalarFields
-            //const volScalarField S_AdhOn = sAdhOn();
-            const volScalarField S_AdhOn
-            (
-                A(c.kAdhVwfOn/c.kAdhVwfOn, c.sAdhOn_C, shearRate)
-            );
+            const volScalarField S_AdhOn = sAdhOn();
             const volScalarField S_AdhOff = sAdhOff();
-            //const volScalarField S_CohOn = sCohOn();
-            const volScalarField S_CohOn
-            (
-                A(c.kCohVwfOnPmax/c.kCohVwfOnPmax, c.sCohOn_C, shearRate)
-            );
+            const volScalarField S_CohOn = sCohOn();
             const volScalarField S_CohOff = sCohOff();
-            //const volScalarField S_Act = sAct();
-            const volScalarField S_Act
-            (
-                A(c.kActVwf/c.kActVwf,c.sAct_C,shearRate)
-            );
+            const volScalarField S_Act = sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,ADP);
             const volScalarField A_E2 = A(c.kActE2,c.E2_ast,E2);
             const volScalarField gEtaB = g(eta_B);
@@ -203,7 +191,7 @@ class Species_platelet : public Species
             k[0] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
                     + c.kAdhVwfOff * S_AdhOff * Pseu
                     - c.kCohVwfOnPmax * S_CohOn * gEtaB * Pmu
-                    + c.kCohVwfOff * S_CohOff * (Pbvu) // + Pseu)
+                    + c.kCohVwfOff * S_CohOff * Pbvu
                     - (A_ADP + A_E2)*Pmu;
             
             // Pma: Mobile Activated 

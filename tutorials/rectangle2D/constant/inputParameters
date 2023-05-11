@@ -66,11 +66,11 @@ tf_Plt 0.2; // When the platelets reach Plt_0 at inlet
 kAdh_len #calc "$w_inj"; // Length of the adhesion region [mm]
 kAdhCol 3.3212e-08; // on-rate of adhesion via collagen [mm^3 / s]
 kAdhVwfOn 3.3212e-08; // on-rate of adhesion via vWF [mm^3 / s]
-kAdhVwfOff #calc "5.0*$kAdhVwfOn*$Plt_0"; // off-rate of adhesion via vWF [1 / s]
+kAdhVwfOff #calc "$kAdhVwfOn * $Plt_0"; // off-rate of adhesion via vWF [1 / s]
 
 // Platelet Cohesion Params
-kCohVwfOnPmax 1.0e+4; // on-rate of cohesion via vWF [1/s]
-kCohVwfOff $kAdhVwfOff; // // off-rate of cohesion via vWF [1/s]
+kCohVwfOnPmax 1.0e+4; // on-rate of cohesi:qon via vWF [1/s]
+kCohVwfOff #calc "$Plt_0 / $Pmax * $kCohVwfOnPmax"; // // off-rate of cohesion via vWF [1/s]
 kCohFbgOnPmax 1.0e+4; // on-rate of cohesion via Fibrinogen [1/s] 
 
 // Platelet Activation Params
@@ -83,19 +83,19 @@ E2_ast 1.0e-06; // Critical concentration of thrombin [nanomol / mm^3]
 // Parameters for virtual substance eta
 eta_t 0.1; // threshold value for g(eta) [dimless]
 eta_ast 0.4; // eta_ast + eta_t = 0.25 - 0.75 [dimless]
-l_D_eta #calc "2.0*$Pdiam"; // length of "diffusion" for eta [mm]
+l_D_eta #calc "2.0 * $Pdiam"; // length of "diffusion" for eta [mm]
 
 // Parameters for shear-dependent phenomenological functions S(\dot\gamma)
-sAdhOn_C 500.0; // Critical shear rate for sAdhOn [1/s]
-sigmaAdhOn 2.8; // Steepness parameter for sAdhOn [dimless]
+sAdhOn_C 1000.0; // Critical shear rate for sAdhOn [1/s]
+sigmaAdhOn 2.5; // Steepness parameter for sAdhOn [dimless]
 
 sAdhOff_C 1000.0; // Critical shear rate for sAdhOff [1/s]
 sAdhOff_a1 -1.01; // Shape parameter for sAdhOff function [dimless]
 sAdhOff_a2 0.34; // Shape parameter for sAdhOff function [dimless]
 sAdhOff_a3 -3.44; // Shape parameter for sAdhOff function [dimless]
 
-sCohOn_C 500.0; // Critical shear rate for sCohOn [1/s]
-sigmaCohOn 2.8; // Steepness parameter for sCohOn [dimless]
+sCohOn_C $sAdhOn_C; // Critical shear rate for sCohOn [1/s]
+sigmaCohOn $sigmaAdhOn; // Steepness parameter for sCohOn [dimless]
 
 sCohOff_C 1000.0; // Critical shear rate for sCohOff [1/s]
 sCohOff_a1 -1.01; // Shape parameter for sCohOff [dimless]
