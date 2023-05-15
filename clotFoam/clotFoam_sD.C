@@ -16,7 +16,7 @@ License
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more deta_Bils.
+    for more deta_Uils.
 
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
@@ -30,15 +30,15 @@ Description
     1) Fluid:  Transient solver for incompressible, laminar flow of Newtonian 
        fluid with an additional Darcy term
 
-        du/dt = - grad(p') - div[u*grad(u) - nu*grad(u)] - nu*alpha(theta_B_B)*u,
+        du/dt = - grad(p') - div[u*grad(u) - nu*grad(u)] - nu*alpha(theta_U_B)*u,
         div(u) = 0,
 
     2) Platelet Aggregation: hindered transport of 7 platelet species with 
        activation by ADP, thrombin (e2), and shear rate
        
-         dPmu/dt = - div[W(theta_B_T)*(u*Pmu - Dp*grad(Pmu))] 
+         dPmu/dt = - div[W(theta_U_T)*(u*Pmu - Dp*grad(Pmu))] 
                    + Rmu(Pmu,Pma,Pbvu,Pseu,Psea),
-         dPma/dt = - div[W(theta_B_T)*(u*Pma - Dp*grad(Pma))] 
+         dPma/dt = - div[W(theta_U_T)*(u*Pma - Dp*grad(Pma))] 
                    + Rma(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
        dPbvu/dt  = Rbvu(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
        dPbva/dt  = Rbva(Pmu,Pma,Pbvu,Pbva,Pseu,Psea),
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     // Set necessary pointers for each species
     #include "setSpeciesPointers.H"
     
-    // Calculate initial Theta_T, Theta_B, Theta_F
+    // Calculate initial Theta_T, Theta_U, Theta_A
     Plt.updateFractions();
 
     //--- Start time loop

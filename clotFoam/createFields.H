@@ -57,12 +57,12 @@ mesh.setFluxRequired(p.name());
     Fields for Platelet Reactions
 ***************************************************************************/
 // Virtual substance secreted from all Bound Platelets
-Info<< "Reading field eta_B\n" << endl;
-volScalarField eta_B
+Info<< "Reading field eta_U\n" << endl;
+volScalarField eta_U
 (
     IOobject
     (
-        "eta_B",
+        "eta_U",
         runTime.timeName(),
         mesh,
         IOobject::MUST_READ,
@@ -72,19 +72,19 @@ volScalarField eta_B
 );
 
 // Virtual substance secreted from eligible fibrinogen bound Platelets
-Info<< "Reading/creating field eta_F\n" << endl;
-volScalarField eta_F
+Info<< "Reading/creating field eta_A\n" << endl;
+volScalarField eta_A
 (
     IOobject
     (
-        "eta_F",
+        "eta_A",
         runTime.timeName(),
         mesh,
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*eta_B,
-    eta_B.boundaryField().types()
+    0.0*eta_U,
+    eta_U.boundaryField().types()
 );
 
 // Hadh Field (defines adhesion region)
@@ -117,7 +117,7 @@ volScalarField Theta_T
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*eta_B
+    0.0*eta_U
 );
 
 // Bound Platelet Fraction
@@ -132,22 +132,37 @@ volScalarField Theta_B
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*eta_B
+    0.0*eta_U
 );
 
-// Fibrinogen Bound Platelet Fraction
-Info<< "Reading/creating field Theta_F\n" << endl;
-volScalarField Theta_F
+// Bound-unactivated Platelet Fraction
+Info<< "Reading/creating field Theta_U\n" << endl;
+volScalarField Theta_U
 (
     IOobject
     (
-        "Theta_F",
+        "Theta_U",
         runTime.timeName(),
         mesh,
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    0.0*eta_B
+    0.0*eta_U
+);
+
+// Bound-activated Platelet Fraction
+Info<< "Reading/creating field Theta_A\n" << endl;
+volScalarField Theta_A
+(
+    IOobject
+    (
+        "Theta_A",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::AUTO_WRITE
+    ),
+    0.0*eta_U
 );
 
 /**************************************************************************
@@ -167,7 +182,7 @@ volScalarField ADP
     ),
     mesh,
     dimensionedScalar(dimMoles/dimVolume, 0.),
-    eta_B.boundaryField().types()
+    eta_U.boundaryField().types()
 );
 
 // sigma_release Field
@@ -184,7 +199,7 @@ volScalarField sigma_release
     ),
     mesh,
     dimensionedScalar(dimMoles/dimVolume/dimTime, 0.),
-    eta_B.boundaryField().types()
+    eta_U.boundaryField().types()
 );
 
 
@@ -209,12 +224,13 @@ Species_platelet Plt
     pltConst.num_plts,
     pltConst,
     Hadh, 
-    eta_B,
-    eta_F,  
+    eta_U,
+    eta_A,  
     ADP, 
     Theta_T, 
     Theta_B,
-    Theta_F, 
+    Theta_U,
+    Theta_A, 
     shearRate
 );
 

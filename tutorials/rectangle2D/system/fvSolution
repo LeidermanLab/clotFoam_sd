@@ -49,8 +49,8 @@ solvers
         relTol 0;
     }
 
-    // Virtual substances eta_B and eta_F
-    "(eta_B|eta_F)"
+    // Virtual substances eta_U and eta_A
+    "(eta_U|eta_A)"
     {
         solver          GAMG;
         preconditioner  DILU;

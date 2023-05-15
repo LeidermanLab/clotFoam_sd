@@ -5,27 +5,27 @@
     //Info<< "Platelet Reaction Solver: M_react = " << M_rxn << 
     //        ", dt_react = " << h_rxn.value() << endl;
     
-    // Solve for substance eta_B
-    eta_B = max(0*Theta_B, min(1.+0*Theta_B,Theta_B));
-    eta_B.correctBoundaryConditions(); 
+    // Solve for substance eta_U
+    eta_U = max(0*Theta_U, min(1.+0*Theta_U,Theta_U));
+    eta_U.correctBoundaryConditions(); 
     solve(
-        fvm::Sp(1.0,eta_B)
-        - fvc::Sp(1.0,eta_B)
-        -fvm::laplacian(pltConst.l_D_eta*pltConst.l_D_eta/4.0, eta_B)
+        fvm::Sp(1.0,eta_U)
+        - fvc::Sp(1.0,eta_U)
+        -fvm::laplacian(pltConst.l_D_eta*pltConst.l_D_eta/4.0, eta_U)
     ); 
-    eta_B.correctBoundaryConditions(); 
-    eta_B = max(0*eta_F, min(1.+0*eta_B,eta_B));
+    eta_U.correctBoundaryConditions(); 
+    eta_U = max(0*eta_A, min(1.+0*eta_U,eta_U));
 
-    // Solve for substance eta_F
-    eta_F = max(0*Theta_F, min(1.+0*Theta_F,Theta_F));
-    eta_F.correctBoundaryConditions(); 
+    // Solve for substance eta_A
+    eta_A = max(0*Theta_A, min(1.+0*Theta_A,Theta_A));
+    eta_A.correctBoundaryConditions(); 
     solve(
-        fvm::Sp(1.0,eta_F)
-        - fvc::Sp(1.0,eta_F)
-        -fvm::laplacian(pltConst.l_D_eta*pltConst.l_D_eta/4.0, eta_F)
+        fvm::Sp(1.0,eta_A)
+        - fvc::Sp(1.0,eta_A)
+        -fvm::laplacian(pltConst.l_D_eta*pltConst.l_D_eta/4.0, eta_A)
     ); 
-    eta_F.correctBoundaryConditions(); 
-    eta_F = max(0*eta_F, min(1.+0*eta_F,eta_F));
+    eta_A.correctBoundaryConditions(); 
+    eta_A = max(0*eta_A, min(1.+0*eta_A,eta_A));
 
     // Solve for platelet reactions M_rxn times
     for (int m = 0; m < M_rxn; m++ )

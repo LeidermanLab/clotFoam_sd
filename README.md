@@ -114,7 +114,7 @@ The solver begins by loading the mesh, reading in constants from constant/inputP
     * FOR (int m = 0; m < M_rxn; m++ )
       * React platelets with RK4 solver  
     * Update mobile platelet boundary conditions 
-    * Update volume fractions for platelets Theta_B and Theta_T
+    * Update volume fractions for platelets Theta_U and Theta_T
   * Biochemical Reactions:
     * FOR (int m = 0; m < M_rxn; m++ )
        * React biochemcials with RK4 solver  
@@ -124,7 +124,7 @@ The solver begins by loading the mesh, reading in constants from constant/inputP
     * IF sigma_dt has elapsed (e.g. 0.25 s has passed)
       * Update the source term sigma_release   
   * Check if solution is diverging
-    * IF Theta_B or Theta_T exceed 1.01: STOP
+    * IF Theta_U or Theta_T exceed 1.01: STOP
     * IF pressure p < 0: STOP  
   * Write Fields
 

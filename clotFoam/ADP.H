@@ -29,7 +29,7 @@ if ( mag(tcount - sigma_dt) <= runTime.deltaTValue() )
 
     // Update current ddt_Pbnew and tau
     ddt_Pbnew[sigma_N] = 
-        pltConst.Pmax*(Theta_F-Theta_F.oldTime()) / runTime.deltaT();
+        pltConst.Pmax*(Theta_A-Theta_A.oldTime()) / runTime.deltaT();
     tau[sigma_N] = runTime.time().value();
 
     // Integrate sigma_release

@@ -9,7 +9,7 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
-    object      eta_B;
+    object      eta_U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -19,17 +19,27 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inletVessel
-    {
-        type            zeroGradient;
-    }
-    
-    outletVessel
+    inletLeft
     {
         type            zeroGradient;
     }
 
-    outletExt
+    inletRight
+    {
+        type            zeroGradient;
+    }
+    
+    outletLeft
+    {
+        type            zeroGradient;
+    }
+
+    outletRight
+    {
+        type            zeroGradient;
+    }
+
+    injuryWalls
     {
         type            zeroGradient;
     }
@@ -38,15 +48,15 @@ boundaryField
     {
         type            zeroGradient;
     }
-    
-    injuryWalls
+
+    leftChannelInnerWall
     {
         type            zeroGradient;
     }
-    
-    frontAndBack
+
+    rightChannelInnerWall
     {
-        type            empty;
+        type            zeroGradient;
     }
 }
 

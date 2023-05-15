@@ -3,12 +3,13 @@ class Species_platelet : public Species
     private:
         const plateletConstants& c;
         const volScalarField& Hadh;
-        const volScalarField& eta_B;
-        const volScalarField& eta_F;
+        const volScalarField& eta_U;
+        const volScalarField& eta_A;
         const volScalarField& ADP;
         volScalarField& Theta_T;
         volScalarField& Theta_B;
-        volScalarField& Theta_F;
+        volScalarField& Theta_U;
+        volScalarField& Theta_A;
         volScalarField& shearRate;
         Species *fluidPhase {nullptr};
 
@@ -19,24 +20,26 @@ class Species_platelet : public Species
             const int numSpecies_,
             const plateletConstants& c_,
             const volScalarField& Hadh_,
-            const volScalarField& eta_B_,
-            const volScalarField& eta_F_,
+            const volScalarField& eta_U_,
+            const volScalarField& eta_A_,
             const volScalarField& ADP_,
             volScalarField& Theta_T_,
             volScalarField& Theta_B_,
-            volScalarField& Theta_F_,
+            volScalarField& Theta_U_,
+            volScalarField& Theta_A_,
             volScalarField& shearRate_
         )
         :
             Species(numSpecies_),
             c(c_),
             Hadh(Hadh_), 
-            eta_B(eta_B_), 
-            eta_F(eta_F_), 
+            eta_U(eta_U_), 
+            eta_A(eta_A_), 
             ADP(ADP_), 
             Theta_T(Theta_T_), 
-            Theta_B(Theta_B_),
-            Theta_F(Theta_F_),
+            Theta_B(Theta_B_), 
+            Theta_U(Theta_U_),
+            Theta_A(Theta_A_),
             shearRate(shearRate_),
             fluidPhase(nullptr)
         {}
@@ -50,17 +53,21 @@ class Species_platelet : public Species
         // update the platelet fractions
         void updateFractions()
         {
-            // Platelets that are (or can become) fibrinogen bound
-            // Theta_F = (Pbva + Pbfa + Psea) / Pmax
-            Theta_F = (field[3] + field[4] + field[6]) / c.Pmax;
+            // Platelets that are bound and unactivated
+            // Theta_U = (Pbvu + Pseu) / Pmax
+            Theta_A = (field[2] + field[5]) / c.Pmax;
 
-            // All bound platelets
-            // Theta_B = Theta_F + (Pbvu + Pseu) / Pmax
-            Theta_B = Theta_F + (field[2] + field[5]) / c.Pmax;
+            // Platelets that are bound and activated
+            // Theta_A = (Pbva + Pbfa + Psea) / Pmax
+            Theta_A = (field[3] + field[4] + field[6]) / c.Pmax;
 
-            // All platelets
+            // All bound platelets (used in Brinkman term)
+            // Theta_B = Theta_U + Theta_A
+            Theta_U = Theta_A + (field[2] + field[5]) / c.Pmax;
+
+            // All platelets (used in hindered transport function)
             // Theta_T = Theta_B + mobile speices
-            Theta_T = Theta_B + (field[0] + field[1]) / c.Pmax;
+            Theta_T = Theta_U + (field[0] + field[1]) / c.Pmax;
         }
 
         // Activation hill function for any concentration C, given rate kC_Pla & C_ast
@@ -170,9 +177,8 @@ class Species_platelet : public Species
             const volScalarField S_Act = sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,ADP);
             const volScalarField A_E2 = A(c.kActE2,c.E2_ast,E2);
-            const volScalarField gEtaB = g(eta_B);
-            const volScalarField gEtaF = g(eta_F);
-            const volScalarField TFbyTB = Theta_F / (Theta_B + 1.e-12);
+            const volScalarField gEtaU = g(eta_U);
+            const volScalarField gEtaA = g(eta_A);
             const volScalarField Hadh_x_seBoundPlts
             (
                 Hadh * 
@@ -190,35 +196,35 @@ class Species_platelet : public Species
             // Pmu: Mobile Unactivated 
             k[0] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
                     + c.kAdhVwfOff * S_AdhOff * Pseu
-                    - c.kCohVwfOnPmax * S_CohOn * gEtaB * Pmu
+                    - c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA)* Pmu
                     + c.kCohVwfOff * S_CohOff * Pbvu
                     - (A_ADP + A_E2)*Pmu;
             
             // Pma: Mobile Activated 
             k[1] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
-                   - c.kCohVwfOnPmax * S_CohOn * (1. - TFbyTB) * gEtaB * Pma
+                   - c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA) * Pma
+                   - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pma
                    + c.kCohVwfOff * S_CohOff * Pbva
-                   - c.kCohFbgOnPmax * S_CohOn * TFbyTB * gEtaF * Pma
                    + (A_ADP + A_E2)*Pmu;
             
             // Pbvu: vWF Bound Unctivated 
             k[2] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbvu
-                   + c.kCohVwfOnPmax * S_CohOn * gEtaB * Pmu
+                   + c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA)* Pmu
                    - c.kCohVwfOff * S_CohOff * Pbvu
                    - (A_ADP + A_E2) * Pbvu
                    - c.kActVwf * S_Act * Pbvu;
             
             // Pbva: vWF Bound Activated 
             k[3] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbva
-                   + c.kCohVwfOnPmax * S_CohOn * (1. - TFbyTB) * gEtaB * Pma
+                   + c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA) * Pma
                    - c.kCohVwfOff * S_CohOff * Pbva
-                   - c.kCohFbgOnPmax * S_CohOn * gEtaF * Pbva
+                   - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pbva
                    + (A_ADP + A_E2) * Pbvu
                    + c.kActVwf * S_Act * Pbvu;
             
             // Pbfa: Fibrinogen Bound Activated
             k[4] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbfa
-                   + c.kCohFbgOnPmax * S_CohOn * gEtaF * (TFbyTB*Pma + Pbva);
+                   + c.kCohFbgOnPmax * S_CohOn * gEtaA * (Pma + Pbva);
                    
             // Pseu: SE-Bound Unactivated
             k[5] =  c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
