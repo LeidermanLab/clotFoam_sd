@@ -55,7 +55,7 @@ class Species_platelet : public Species
         {
             // Platelets that are bound and unactivated
             // Theta_U = (Pbvu + Pseu) / Pmax
-            Theta_A = (field[2] + field[5]) / c.Pmax;
+            Theta_U = (field[2] + field[5]) / c.Pmax;
 
             // Platelets that are bound and activated
             // Theta_A = (Pbva + Pbfa + Psea) / Pmax
@@ -63,11 +63,11 @@ class Species_platelet : public Species
 
             // All bound platelets (used in Brinkman term)
             // Theta_B = Theta_U + Theta_A
-            Theta_U = Theta_A + (field[2] + field[5]) / c.Pmax;
+            Theta_B = Theta_U + Theta_A;
 
             // All platelets (used in hindered transport function)
             // Theta_T = Theta_B + mobile speices
-            Theta_T = Theta_U + (field[0] + field[1]) / c.Pmax;
+            Theta_T = Theta_B + (field[0] + field[1]) / c.Pmax;
         }
 
         // Activation hill function for any concentration C, given rate kC_Pla & C_ast
