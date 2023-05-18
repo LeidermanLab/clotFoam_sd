@@ -36,10 +36,11 @@ class Species_fluidPhase : public Species
             Key for variable references
             fluidPhase[0] = S1,     pltBound[0] -> S1b,     Plt[0] -> Pmu,
             fluidPhase[1] = S2,     pltBound[1] -> S2b,     Plt[1] -> Pma,
-            fluidPhase[2] = E1,     pltBound[2] -> E1b,     Plt[2] -> Pba,
-            fluidPhase[3] = E2,     pltBound[3] -> E2b,     Plt[3] -> Pbse.
-                                    pltBound[4] -> C1,
-                                    pltBound[5] -> C2,
+            fluidPhase[2] = E1,     pltBound[2] -> E1b,     Plt[2] -> Pbvu,
+            fluidPhase[3] = E2,     pltBound[3] -> E2b,     Plt[3] -> Pbva,
+                                    pltBound[4] -> C1,      Plt[4] -> Pbfa,
+                                    pltBound[5] -> C2,      Plt[5] -> Pseu,
+                                                            Plt[6] -> Psea.
             
             input refers to the function input from RK4, 
             e.g. input[0] = S1 + h/2 * k1
@@ -62,26 +63,27 @@ class Species_fluidPhase : public Species
             const volScalarField& C2 = pltBound->input[5];
             
             // Platelet Reference Vars
-            const volScalarField& Pba = Plt->field[2];
-            const volScalarField& Pbse = Plt->field[3];
+            const volScalarField& Pbfa = Plt->input[4];
+            const volScalarField& Psea = Plt->input[6];
+            const volScalarField BndPltsConc = (Pbfa + Psea) / c.N_Avo;
 
             // S1
-            k[0] = - c.kS1_on * (c.N_1 * (Pba + Pbse) / c.N_Avo
+            k[0] = - c.kS1_on * (c.N_1 * BndPltsConc
                    - (S1b + E1b + C1 + C2)) * S1
                    + c.kS1_off * S1b;
 
             // S2
-            k[1] = - c.kS2_on * (c.N_2 * (Pba + Pbse) / c.N_Avo 
+            k[1] = - c.kS2_on * (c.N_2 * BndPltsConc 
                    - (S2b + E2b + C1 + C2))* S2 
                    + c.kS2_off * S2b;
 
             // E1 (has additional reactions on SE through BC)
-            k[2] = - c.kE1_on * (c.N_1 * (Pba + Pbse) / c.N_Avo 
+            k[2] = - c.kE1_on * (c.N_1 * BndPltsConc 
                    - (S1b + E1b + C1 + C2))* E1 
                    + c.kE1_off * E1b;
 
             // E2
-            k[3] = - c.kE2_on * (c.N_2 * (Pba + Pbse) / c.N_Avo 
+            k[3] = - c.kE2_on * (c.N_2 * BndPltsConc 
                    - (S2b + E2b + C1 + C2))* E2
                    + c.kE2_off * E2b;
         }
