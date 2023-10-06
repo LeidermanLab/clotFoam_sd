@@ -3,7 +3,6 @@ class Species_platelet : public Species
     private:
         const plateletConstants& c;
         const volScalarField& Hadh;
-        const volScalarField& Hcoh;
         const volScalarField& eta_U;
         const volScalarField& eta_A;
         const volScalarField& ADP;
@@ -21,7 +20,6 @@ class Species_platelet : public Species
             const int numSpecies_,
             const plateletConstants& c_,
             const volScalarField& Hadh_,
-            const volScalarField& Hcoh_,
             const volScalarField& eta_U_,
             const volScalarField& eta_A_,
             const volScalarField& ADP_,
@@ -35,7 +33,6 @@ class Species_platelet : public Species
             Species(numSpecies_),
             c(c_),
             Hadh(Hadh_), 
-            Hcoh(Hcoh_), 
             eta_U(eta_U_), 
             eta_A(eta_A_), 
             ADP(ADP_), 
@@ -175,7 +172,7 @@ class Species_platelet : public Species
             // Temporary volScalarFields
             const volScalarField S_AdhOn = sAdhOn();
             const volScalarField S_AdhOff = sAdhOff();
-            const volScalarField S_CohOn = Hcoh * sCohOn();
+            const volScalarField S_CohOn = sCohOn();
             const volScalarField S_CohOff = sCohOff();
             const volScalarField S_Act = sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,ADP);

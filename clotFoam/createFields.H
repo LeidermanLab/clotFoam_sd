@@ -102,21 +102,6 @@ volScalarField Hadh
     mesh
 );
 
-// Hcoh Field (defines cohesion region)
-Info<< "Reading/creating field Hcoh\n" << endl;
-volScalarField Hcoh
-(
-    IOobject
-    (
-        "Hcoh",
-        runTime.timeName(),
-        mesh,
-        IOobject::READ_IF_PRESENT,
-        IOobject::NO_WRITE
-    ),
-    mag(Hadh - 1.)
-);
-
 /**************************************************************************
     Platelet Fraction Fields
 ***************************************************************************/
@@ -239,7 +224,6 @@ Species_platelet Plt
     pltConst.num_plts,
     pltConst,
     Hadh, 
-    Hcoh,
     eta_U,
     eta_A,  
     ADP, 
