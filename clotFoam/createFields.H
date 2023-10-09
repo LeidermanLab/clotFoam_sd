@@ -101,6 +101,21 @@ volScalarField Hadh
     ),
     mesh
 );
+if(smoothHadh)
+{
+    Info<< "Smoothing the Hadh field \n" << endl;
+    dimensionedScalar D_Hadh = 0.25 * pltConst.Pdiam;
+    Hadh = Hadh + fvc::laplacian(D_Hadh*D_Hadh/4., Hadh);
+    /*
+    solve
+    (
+        fvm::Sp(1.,Hadh)
+        - fvc::Sp(1.,Hadh)
+        - fvm::laplacian(D_Hadh*D_Hadh/4., Hadh)
+    );
+    */ 
+    Hadh = max(0*Hadh, min(1.+0*Hadh,Hadh));    
+}
 
 /**************************************************************************
     Platelet Fraction Fields
