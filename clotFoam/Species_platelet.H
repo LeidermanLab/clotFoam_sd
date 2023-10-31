@@ -103,27 +103,27 @@ class Species_platelet : public Species
         volScalarField sAdhOn()
         {
             // For testing, we make the sAdhOn function 1 everywhere
-            return 0.*shearRate + 1.;
+            return 0.*Theta_B + 1.;
         }
 
         volScalarField sAdhOff()
         {
             // For testing, we make the sAdhOff function 1 everywhere
-            return 0.*shearRate + 1.;
+            return 0.*Theta_B  + 1.;
         }
 
         // Shear-dependent cohesion on-rate function S_{coh+}
         volScalarField sCohOn()
         {
             // For testing, we make the sCohOn function 1 everywhere
-            return 0.*shearRate + 1.;
+            return 0.*Theta_B  + 1.;
         }
 
         // Shear-dependent cohesion off-rate function S_{coh-}
         volScalarField sCohOff()
         {
             // For testing, we make the sCohOff function 1 everywhere
-            return 0.*shearRate + 1.;
+            return 0.*Theta_B  + 1.;
         }
 
         /*
