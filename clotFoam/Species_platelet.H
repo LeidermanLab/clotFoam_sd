@@ -102,9 +102,37 @@ class Species_platelet : public Species
         // Shear-dependent adhesion on-rate function S_{adh+}
         volScalarField sAdhOn()
         {
+            // For testing, we make the sAdhOn function 1 everywhere
+            return 0.*shearRate + 1.;
+        }
+
+        volScalarField sAdhOff()
+        {
+            // For testing, we make the sAdhOff function 1 everywhere
+            return 0.*shearRate + 1.;
+        }
+
+        // Shear-dependent cohesion on-rate function S_{coh+}
+        volScalarField sCohOn()
+        {
+            // For testing, we make the sCohOn function 1 everywhere
+            return 0.*shearRate + 1.;
+        }
+
+        // Shear-dependent cohesion off-rate function S_{coh-}
+        volScalarField sCohOff()
+        {
+            // For testing, we make the sCohOff function 1 everywhere
+            return 0.*shearRate + 1.;
+        }
+
+        /*
+        volScalarField sAdhOn()
+        {
             return 0.5 * ( 1. 
                    + tanh( c.sigmaAdhOn * (shearRate - c.sAdhOn_C) / c.sAdhOn_C ));
         }
+        
 
         // Shear-dependent cohesion on-rate function S_{coh+}
         volScalarField sCohOn()
@@ -113,6 +141,8 @@ class Species_platelet : public Species
                    + tanh(c.sigmaCohOn * (shearRate - c.sCohOn_C) / c.sCohOn_C));
         }
 
+        
+        
         // Shear-dependent adhesion off-rate function S_{adh-}
         volScalarField sAdhOff()
         {
@@ -120,6 +150,7 @@ class Species_platelet : public Species
                    + exp(c.sAdhOff_a2 * shearRate / c.sAdhOff_C)
                    + exp(c.sAdhOff_a3 * shearRate / c.sAdhOff_C) ) / 3.;
         }
+        
 
         // Shear-dependent cohesion off-rate function S_{coh-}
         volScalarField sCohOff()
@@ -128,6 +159,7 @@ class Species_platelet : public Species
                    + exp(c.sCohOff_a2 * shearRate / c.sCohOff_C)
                    + exp(c.sCohOff_a3 * shearRate / c.sCohOff_C) ) / 3.;
         }
+        */
 
         // Shear-dependent activation on-rate function S_{act}
         volScalarField sAct()
