@@ -263,14 +263,14 @@ class Species_platelet : public Species
                     - c.kAdhVwfOff * S_AdhOff * Pseu
                     - (A_ADP + A_E2) * Pseu
                     - c.kActVwf * S_Act * Pseu
-                    - c.kAdhCol * c.Pmax * Pseu;
+                    - c.kActCol * Pseu;
 
             // Psea: SE-Bound Activated
             k[6] = c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
                    + c.kAdhCol * Hadh_x_seBoundPlts * (Pbvu + Pbva + Pbfa)
                    + (A_ADP + A_E2) * Pseu
                    + c.kActVwf * S_Act * Pseu
-                   + c.kAdhCol * c.Pmax * Pseu;
+                   + c.kActCol * Pseu;
 
         }
 };

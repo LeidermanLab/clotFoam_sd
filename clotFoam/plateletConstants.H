@@ -45,6 +45,14 @@ struct plateletConstants
         inputParameters.lookup("kAdhCol")
     };
 
+    // Platelet adhesion binding on-rate via collagen
+    dimensionedScalar kActCol
+    {
+        "kActCol",
+        dimless/dimTime,
+        inputParameters.lookupOrDefault("kActCol",kAdhCol.value()*Pmax.value())
+    };
+
     // Platelet adhesion binding on-rate via vWF
     dimensionedScalar kAdhVwfOn
     {
