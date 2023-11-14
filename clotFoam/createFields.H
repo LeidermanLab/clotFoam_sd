@@ -81,7 +81,7 @@ volScalarField eta_A
         runTime.timeName(),
         mesh,
         IOobject::READ_IF_PRESENT,
-        IOobject::NO_WRITE
+        IOobject::AUTO_WRITE
     ),
     0.0*eta_U,
     eta_U.boundaryField().types()
