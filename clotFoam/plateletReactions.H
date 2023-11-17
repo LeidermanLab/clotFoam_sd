@@ -27,6 +27,7 @@
     eta_A.correctBoundaryConditions(); 
     eta_A = max(0*eta_A, min(1.+0*eta_A,eta_A));
 
+    /*
     // Set eta's = 0 if theta_B(x) = 1.  Helps ensure Theta_B <= 1 by
     // effectively setting k_coh to zero through g(eta) function.
     forAll(mesh.cells(), celli)
@@ -37,6 +38,7 @@
             eta_A[celli] = 0.;
 		} 
     }
+    */
 
     // Solve for platelet reactions M_rxn times
     for (int m = 0; m < M_rxn; m++ )
