@@ -45,7 +45,7 @@ struct plateletConstants
         inputParameters.lookup("kAdhCol")
     };
 
-    // Platelet adhesion binding on-rate via collagen
+    // Platelet activation rate by collagen
     dimensionedScalar kActCol
     {
         "kActCol",
