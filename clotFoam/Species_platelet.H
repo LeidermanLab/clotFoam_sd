@@ -221,7 +221,7 @@ class Species_platelet : public Species
                         (
                             c.Pmax - Pseu - Psea - Pbvu - Pbva - Pbfa,
                             c.Pmax + 0*Pseu
-                         )
+                        )
                     )
             );
             
