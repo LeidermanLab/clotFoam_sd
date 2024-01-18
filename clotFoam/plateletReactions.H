@@ -51,7 +51,7 @@ forAll(Plt.field,i)
                         0.*Plt.field[i],
                         min(
                             Plt.field[i], 
-                            0.*Plt.field[i] +  pltConst.Pmax - 1.e-10
+                            0.*Plt.field[i] +  pltConst.Pmax
                             )
                         ); 
 }
