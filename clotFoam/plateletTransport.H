@@ -18,8 +18,7 @@
             min
             ( 
                 1.0 + 0*Theta_Tf, 
-                1.0/std::tanh(std::atan(1)* 4.0 * 1.0) *
-                    tanh( constant::mathematical::pi * (1.0 - Theta_Tf))
+                tanh( constant::mathematical::pi * (0.999 - Theta_Tf))
             )
         )
     );

@@ -27,6 +27,16 @@
     eta_A.correctBoundaryConditions(); 
     eta_A = max(0*eta_A, min(1.+0*eta_A,eta_A));
 
+    // Turn off cohesion after a cell fills up by setting eta's = 0
+    forAll(mesh.cells(), celli)
+    {
+        if(Theta_B[celli] >= 0.999) 
+        {
+            eta_U[celli] = 0.;
+            eta_A[celli] = 0.;
+        }
+    }
+
     // Solve for platelet reactions M_rxn times
     for (int m = 0; m < M_rxn; m++ )
     {      
