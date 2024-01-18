@@ -13,6 +13,7 @@ fvScalarMatrix ADPEqn
 ADPEqn.relax();
 ADPEqn.solve();
 ADP.correctBoundaryConditions();
+ADP = max(0.*ADP, ADP);
 
 // Update the sigma_release function
 tcount = tcount + runTime.deltaTValue(); 
