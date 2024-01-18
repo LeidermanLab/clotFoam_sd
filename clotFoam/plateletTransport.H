@@ -59,8 +59,11 @@
 
         PltTransportEqn.relax();
         PltTransportEqn.solve();
-        Plt.field[i] = max(0*Plt.field[i], Plt.field[i]);
+        Plt.field[i] = max(0*Plt.field[i], Plt.field[i]); // ignore any osicillations
         Plt.field[i].correctBoundaryConditions();
     }
+
+    // Update the platelet fractions
+    Plt.updateFractions();
 }
 

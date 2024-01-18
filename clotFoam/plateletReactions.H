@@ -27,33 +27,40 @@ solve(
 eta_A.correctBoundaryConditions(); 
 eta_A = max(0*eta_A, min(1.+0*eta_A,eta_A));
 
-// Turn off cohesion after a cell fills up by setting eta's = 0
-forAll(mesh.cells(), celli)
-{
-    if(Theta_B[celli] >= 0.999) 
-    {
-        eta_U[celli] = 0.;
-        eta_A[celli] = 0.;
-    }
-}
-
 // Solve for platelet reactions M_rxn times
 for (int m = 0; m < M_rxn; m++ )
-{      
+{   // Turn off cohesion after a cell fills up by setting eta's = 0
+    forAll(mesh.cells(), celli)
+    {
+        if(Theta_B[celli] >= 0.999) 
+        {
+            cohOnOff[celli] = 0.;
+        }
+        else
+        {
+            cohOnOff[celli] = 1.;
+        }
+    }   
+    
     //- RK4 Solver
     odeSolver(h_rxn, ptrToPlt, num_pltObjs);
-}
 
-forAll(Plt.field,i)
-{
-    // ignore small oscilations due to numerical methods
-    Plt.field[i] = max(
-                        0.*Plt.field[i],
-                        min(
-                            Plt.field[i], 
-                            0.*Plt.field[i] +  pltConst.Pmax
+    // Ignore small oscilations due to numerical methods
+    forAll(Plt.field,i)
+    {
+        Plt.field[i] = max
+                        (
+                            0.*Plt.field[i],
+                            min
+                            (
+                                Plt.field[i], 
+                                0.*Plt.field[i] +  pltConst.Pmax
                             )
                         ); 
+    }
+    
+    // Update the platelet fractions
+    Plt.updateFractions();
 }
 
 // Update the BC's for the mobile Platelet Species

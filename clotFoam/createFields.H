@@ -87,6 +87,21 @@ volScalarField eta_A
     eta_U.boundaryField().types()
 );
 
+// Virtual substance secreted from eligible fibrinogen bound Platelets
+Info<< "Creating field cohOnOff\n" << endl;
+volScalarField cohOnOff
+(
+    IOobject
+    (
+        "cohOnOff",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::NO_WRITE
+    ),
+    0.0*eta_U
+);
+
 // Hadh Field (defines adhesion region)
 Info<< "Reading field Hadh\n" << endl;
 volScalarField Hadh
@@ -232,7 +247,8 @@ Species_platelet Plt
     pltConst,
     Hadh, 
     eta_U,
-    eta_A,  
+    eta_A, 
+    cohOnOff, 
     ADP, 
     Theta_T, 
     Theta_B,

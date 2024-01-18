@@ -5,6 +5,7 @@ class Species_platelet : public Species
         const volScalarField& Hadh;
         const volScalarField& eta_U;
         const volScalarField& eta_A;
+        const volScalarField& cohOnOff;
         const volScalarField& ADP;
         volScalarField& Theta_T;
         volScalarField& Theta_B;
@@ -22,6 +23,7 @@ class Species_platelet : public Species
             const volScalarField& Hadh_,
             const volScalarField& eta_U_,
             const volScalarField& eta_A_,
+            const volScalarField& cohOnOff_,
             const volScalarField& ADP_,
             volScalarField& Theta_T_,
             volScalarField& Theta_B_,
@@ -36,6 +38,7 @@ class Species_platelet : public Species
             Hadh(Hadh_), 
             eta_U(eta_U_), 
             eta_A(eta_A_), 
+            cohOnOff(cohOnOff_), 
             ADP(ADP_), 
             Theta_T(Theta_T_), 
             Theta_B(Theta_B_), 
@@ -229,27 +232,27 @@ class Species_platelet : public Species
             // Pmu: Mobile Unactivated 
             k[0] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
                     + c.kAdhVwfOff * S_AdhOff * Pseu
-                    - c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA)* Pmu
+                    - c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA)* Pmu
                     + c.kCohVwfOff * S_CohOff * Pbvu
                     - (A_ADP + A_E2)*Pmu;
             
             // Pma: Mobile Activated 
             k[1] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
-                   - c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA) * Pma
+                   - c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA) * Pma
                    - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pma
                    + c.kCohVwfOff * S_CohOff * Pbva
                    + (A_ADP + A_E2)*Pmu;
             
             // Pbvu: vWF Bound Unctivated 
             k[2] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbvu
-                   + c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA)* Pmu
+                   + c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA)* Pmu
                    - c.kCohVwfOff * S_CohOff * Pbvu
                    - (A_ADP + A_E2) * Pbvu
                    - c.kActVwf * S_Act * Pbvu;
             
             // Pbva: vWF Bound Activated 
             k[3] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbva
-                   + c.kCohVwfOnPmax * S_CohOn * (gEtaU + gEtaA) * Pma
+                   + c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA) * Pma
                    - c.kCohVwfOff * S_CohOff * Pbva
                    - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pbva
                    + (A_ADP + A_E2) * Pbvu
@@ -257,7 +260,8 @@ class Species_platelet : public Species
             
             // Pbfa: Fibrinogen Bound Activated
             k[4] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbfa
-                   + c.kCohFbgOnPmax * S_CohOn * gEtaA * (Pma + Pbva);
+                   + c.kCohFbgOnPmax  * cohOnOff * S_CohOn * gEtaA * Pma 
+                   + c.kCohFbgOnPmax  * S_CohOn * gEtaA * Pbva;
                    
             // Pseu: SE-Bound Unactivated
             k[5] =  c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
