@@ -63,6 +63,9 @@
         Plt.field[i].correctBoundaryConditions();
     }
 
+    // Ignore small oscilations due to numerical methods
+    Plt.limitPlatelets();
+
     // Update the platelet fractions
     Plt.updateFractions();
 }

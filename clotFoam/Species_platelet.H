@@ -74,6 +74,23 @@ class Species_platelet : public Species
             Theta_T = Theta_B + (field[0] + field[1]) / c.Pmax;
         }
 
+        // Ignore small oscilations due to numerical methods
+        void limitPlatelets()
+        {
+            forAll(field,i)
+            {
+                field[i] = max
+                            (
+                                0.*field[i],
+                                min
+                                (
+                                    field[i], 
+                                    0.*field[i] +  c.Pmax
+                                )
+                            ); 
+            }
+        }
+
         // Activation hill function for any concentration C, given rate kC_Pla & C_ast
         volScalarField A
         (

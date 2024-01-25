@@ -46,18 +46,7 @@ for (int m = 0; m < M_rxn; m++ )
     odeSolver(h_rxn, ptrToPlt, num_pltObjs);
 
     // Ignore small oscilations due to numerical methods
-    forAll(Plt.field,i)
-    {
-        Plt.field[i] = max
-                        (
-                            0.*Plt.field[i],
-                            min
-                            (
-                                Plt.field[i], 
-                                0.*Plt.field[i] +  pltConst.Pmax
-                            )
-                        ); 
-    }
+    Plt.limitPlatelets();
     
     // Update the platelet fractions
     Plt.updateFractions();

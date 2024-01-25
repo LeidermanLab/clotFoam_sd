@@ -115,10 +115,17 @@ int main(int argc, char *argv[])
     // Calculate initial Theta_T, Theta_U, Theta_A
     Plt.updateFractions();
 
+    // Define parameters for controling CFL and refining when needed
+    scalar maxCoControlDict = 1.;
+    scalar maxCoRefine = 1.;
+    label refinements = 0;
+    label maxRefinements = 2;
+    scalar threshold[maxRefinements+1] = {1.0, 1.005, 1.01};
+
     //--- Start time loop
     Info<< "\nStarting time loop\n" << endl;
 
-    while (runTime.loop())
+    while (runTime.run())
     {   
         if (runTime.write())
         {
@@ -129,13 +136,21 @@ int main(int argc, char *argv[])
         const bool adjustTimeStep =
             runTime.controlDict().lookupOrDefault("adjustTimeStep", false);
 
-        scalar maxCo =
+        maxCoControlDict = 
             runTime.controlDict().lookupOrDefault<scalar>("maxCo", 1.0);
+        
+        scalar maxCo = min(maxCoControlDict, maxCoRefine);
 
         scalar maxDeltaT =
             runTime.controlDict().lookupOrDefault<scalar>("maxDeltaT", GREAT);
         #include "CourantNo.H"
         #include "setDeltaT.H"
+
+        // Make a backup copy of curren TimeState (in case refinement is needed)
+        TimeState tSCurrent(runTime);
+        
+        // Update the time using deltaT from CourantNo.H
+        runTime++;
 
         // Solve the Navier-Stokes-Brinkman Equations
         #include "solveFluids.H"
@@ -145,12 +160,43 @@ int main(int argc, char *argv[])
 
         // Transport the platelets dp/dt = - div(W*J)
         #include "plateletTransport.H" 
+
+        // Check if Theta_T > 1, if so refine deltaT and try again
+        if (max(Theta_T).value() >= threshold[refinements])
+        {
+            //if(refinements == 0 || max(Theta_T).value() >= 1.005)
+            //{
+                refinements++;
+                #include "refineDeltaT.H"
+                #include "solveFluids.H"
+                shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
+                #include "plateletTransport.H" 
+            //}
+        }
         
         // Solve the reaction equations
         h_rxn = runTime.deltaT()/M_rxn; // update the reaction time-step size
         
         #include "plateletReactions.H"
         Plt.updateFractions();
+        
+        // Check if Theta_T > 1, if so refine h_rxn and try again
+        if (max(Theta_T).value() >= 1.01)
+        {
+            Info << "\n!!! Platelet Reaction Refinement !!!" << nl 
+            << "Time = " << runTime.time().value()  
+            << " New m_rxn = " << M_rxn*2 
+            << ", max(Theta_T) = "<< max(Theta_T).value() << endl;
+            
+            h_rxn = runTime.deltaT()/M_rxn/2.; 
+
+            // Restore to value after transport, but before reactions
+            forAll(Plt.field,k)
+            {
+                Plt.field[k] = Plt.fieldOldTime[k]; 
+            } 
+            #include "plateletReactions.H"
+        }
 
         if (coagReactionsOn)
         {
@@ -167,8 +213,8 @@ int main(int argc, char *argv[])
         {
             Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
                 << "  ClockTime = " << runTime.elapsedClockTime() << " s"
-                << endl;
-            Info<< "max(shearRate) = "<< max(shearRate).value() <<" 1/s"<< nl << endl;
+                << "\n max(Theta_T) = "<< max(Theta_T).value()
+                << ",  max(shearRate) = "<< max(shearRate).value() <<" 1/s"<< nl << endl;
         }
 
         // Check if solution is diverging
