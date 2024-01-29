@@ -96,10 +96,11 @@ class Species_platelet : public Species
         (
             const dimensionedScalar& kC_Pla, // Kinitec Rate Constant
             const dimensionedScalar& C_ast, // Critical Value
+            const dimensionedScalar& d, // degree of Hill function
             const volScalarField& C // Concentration
         )
         {
-            return kC_Pla * max(0.*C, C) / (C_ast + max(0.*C,C) );
+            return kC_Pla * max(0.*pow(C,d), pow(C,d) ) / (pow(C_ast,d) + max(0.*pow(C,d),pow(C,d)) );
         }
 
         // Platelet binding affinity function g(eta)  
@@ -228,8 +229,8 @@ class Species_platelet : public Species
             const volScalarField S_CohOn = sCohOn();
             const volScalarField S_CohOff = sCohOff();
             const volScalarField S_Act = sAct();
-            const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,ADP);
-            const volScalarField A_E2 = A(c.kActE2,c.E2_ast,E2); 
+            const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,ADP);
+            const volScalarField A_E2 = A(c.kActE2,c.E2_ast,c.E2_deg,E2); 
             volScalarField gEtaU = g(eta_U); 
             volScalarField gEtaA = g(eta_A); 
             const volScalarField Hadh_x_seBoundPlts
