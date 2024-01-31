@@ -130,6 +130,12 @@ int main(int argc, char *argv[])
         if (runTime.write())
         {
             Info<< "Time = " << runTime.timeName() << nl << endl;
+            
+            // If deltaT has been refined, slowly increase it
+            if (maxCoRefine < maxCoControlDict)
+            {
+                maxCoRefine = min(maxCoRefine + 0.1, maxCoControlDict);
+            }
         }
 
         // Variable time step control variables and adjustments
