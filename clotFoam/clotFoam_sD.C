@@ -170,14 +170,11 @@ int main(int argc, char *argv[])
         // Check if Theta_T > 1, if so refine deltaT and try again
         if (max(Theta_T).value() >= threshold[refinements])
         {
-            //if(refinements == 0 || max(Theta_T).value() >= 1.005)
-            //{
-                refinements++;
-                #include "refineDeltaT.H"
-                #include "solveFluids.H"
-                shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
-                #include "plateletTransport.H" 
-            //}
+            refinements++;
+            #include "refineDeltaT.H"
+            #include "solveFluids.H"
+            shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
+            #include "plateletTransport.H" 
         }
         
         // Solve the reaction equations
