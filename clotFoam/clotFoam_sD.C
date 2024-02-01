@@ -119,8 +119,11 @@ int main(int argc, char *argv[])
     scalar maxCoControlDict = 1.;
     scalar maxCoRefine = 1.;
     label refinements = 0;
-    label maxRefinements = 2;
-    scalar threshold[maxRefinements+1] = {1.0, 1.005, 1.01};
+    label maxRefinements = 10;
+    scalar threshold = 1.0;
+
+
+   
 
     //--- Start time loop
     Info<< "\nStarting time loop\n" << endl;
@@ -168,9 +171,10 @@ int main(int argc, char *argv[])
         #include "plateletTransport.H" 
 
         // Check if Theta_T > 1, if so refine deltaT and try again
-        if (max(Theta_T).value() >= threshold[refinements])
+        if (max(Theta_T).value() >= threshold)
         {
             refinements++;
+            threshold = min(threshold + 0.005, 1.01);
             #include "refineDeltaT.H"
             #include "solveFluids.H"
             shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
