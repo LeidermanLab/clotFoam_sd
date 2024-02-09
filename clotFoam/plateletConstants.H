@@ -124,6 +124,14 @@ struct plateletConstants
         dimless,
         inputParameters.lookupOrDefault("ADP_deg",1.0)
     };
+    
+    // Right shifting of the Hill function for ADP 
+    dimensionedScalar ADP_shift
+    {
+        "ADP_shift",
+        dimMoles/dimVolume,
+        inputParameters.lookupOrDefault("ADP_shift",0.0)
+    };
 
     // Platelet activation rate by thrombin k_{act}^{E2}
     dimensionedScalar kActE2
@@ -147,6 +155,14 @@ struct plateletConstants
         "E2_deg",
         dimless,
         inputParameters.lookupOrDefault("E2_deg",1.0)
+    };
+
+    // Right shifting of the Hill function for E2 
+    dimensionedScalar E2_shift
+    {
+        "E2_shift",
+        dimMoles/dimVolume,
+        inputParameters.lookupOrDefault("E2_shift",0.0)
     };
 
     // Critical concentration of virtual substance eta, eta_ast

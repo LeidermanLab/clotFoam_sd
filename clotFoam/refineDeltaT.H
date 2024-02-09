@@ -19,7 +19,7 @@ if ( refinements > maxRefinements )
 runTime.TimeState::operator=(tSCurrent);
     
 // Refine deltaT by decreasing maxCo and update time
-maxCo = maxCo / 2.;
+maxCo = max(minCo, maxCo / 2.0);
 #include "CourantNo.H"
 #include "setDeltaT.H"
 runTime++;

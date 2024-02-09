@@ -97,10 +97,11 @@ class Species_platelet : public Species
             const dimensionedScalar& kC_Pla, // Kinitec Rate Constant
             const dimensionedScalar& C_ast, // Critical Value
             const dimensionedScalar& d, // degree of Hill function
+            const dimensionedScalar& s, // parameter for shifting right
             const volScalarField& C // Concentration
         )
         {
-            return kC_Pla * max(0.*pow(C,d), pow(C,d) ) / (pow(C_ast,d) + max(0.*pow(C,d),pow(C,d)) );
+            return kC_Pla * max(0.*pow(C,d), pow(C-s,d) ) / (pow(C_ast,d) + max(0.*pow(C,d),pow(C-s,d)) );
         }
 
         // Platelet binding affinity function g(eta)  
@@ -229,8 +230,8 @@ class Species_platelet : public Species
             const volScalarField S_CohOn = sCohOn();
             const volScalarField S_CohOff = sCohOff();
             const volScalarField S_Act = sAct();
-            const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,ADP);
-            const volScalarField A_E2 = A(c.kActE2,c.E2_ast,c.E2_deg,E2); 
+            const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,c.ADP_shift,ADP);
+            const volScalarField A_E2 = A(c.kActE2,c.E2_ast,c.E2_deg,c.E2_shift,E2); 
             volScalarField gEtaU = g(eta_U); 
             volScalarField gEtaA = g(eta_A); 
             const volScalarField Hadh_x_seBoundPlts
@@ -262,7 +263,7 @@ class Species_platelet : public Species
                    + (A_ADP + A_E2)*Pmu;
             
             // Pbvu: vWF Bound Unctivated 
-            k[2] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbvu
+            k[2] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pbvu
                    + c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA)* Pmu
                    - c.kCohVwfOff * S_CohOff * Pbvu
                    - (A_ADP + A_E2) * Pbvu
@@ -282,7 +283,7 @@ class Species_platelet : public Species
                    + c.kCohFbgOnPmax  * S_CohOn * gEtaA * Pbva;
                    
             // Pseu: SE-Bound Unactivated
-            k[5] =  c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
+            k[5] =  c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * (Pmu + Pbvu) 
                     - c.kAdhVwfOff * S_AdhOff * Pseu
                     - (A_ADP + A_E2) * Pseu
                     - c.kActVwf * S_Act * Pseu
@@ -290,7 +291,7 @@ class Species_platelet : public Species
 
             // Psea: SE-Bound Activated
             k[6] = c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
-                   + c.kAdhCol * Hadh_x_seBoundPlts * (Pbvu + Pbva + Pbfa)
+                   + c.kAdhCol * Hadh_x_seBoundPlts * (Pbva + Pbfa)
                    + (A_ADP + A_E2) * Pseu
                    + c.kActVwf * S_Act * Pseu
                    + c.kActCol * Pseu;

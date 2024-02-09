@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
     // Define parameters for controling CFL and refining when needed
     scalar maxCoControlDict = 1.;
     scalar maxCoRefine = 1.;
+    scalar minCo = 0.1;
     label refinements = 0;
     label maxRefinements = 20;
     scalar threshold = 1.0;
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
             // If deltaT has been refined, slowly increase it
             if (maxCoRefine < maxCoControlDict)
             {
-                maxCoRefine = min(maxCoRefine + 0.1, maxCoControlDict);
+                maxCoRefine = max(minCo, min(maxCoRefine + 0.1, maxCoControlDict));
             }
         }
 
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
         if (max(Theta_T).value() >= threshold)
         {
             refinements++;
-            threshold = min(threshold + 0.0025, 1.0075);
+            threshold = min(threshold + 0.005, 1.01);
             #include "refineDeltaT.H"
             #include "solveFluids.H"
             shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
