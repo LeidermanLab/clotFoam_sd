@@ -121,10 +121,7 @@ int main(int argc, char *argv[])
     scalar minCo = 0.1;
     label refinements = 0;
     label maxRefinements = 20;
-    scalar threshold = 1.0;
-
-
-   
+    scalar& threshold = pltConst.thresholdTheta;
 
     //--- Start time loop
     Info<< "\nStarting time loop\n" << endl;
@@ -135,11 +132,14 @@ int main(int argc, char *argv[])
         {
             Info<< "Time = " << runTime.timeName() << nl << endl;
             
-            // If deltaT has been refined, slowly increase it
+            /*
+            // If deltaT has been refined, slowly increase it 
+            // Note: this can lead to too many refinements)
             if (maxCoRefine < maxCoControlDict)
             {
                 maxCoRefine = max(minCo, min(maxCoRefine + 0.1, maxCoControlDict));
             }
+            */
         }
 
         // Variable time step control variables and adjustments

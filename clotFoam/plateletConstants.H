@@ -8,11 +8,15 @@ struct plateletConstants
     {
         readLabel(inputParameters.lookup("num_plts"))
     };
+    
     label num_plts_mobile
     {
         readLabel(inputParameters.lookup("num_plts_mobile"))
     };
 
+    // Threshold value for when to refine deltaT. Refine if Theta_T > thresholdTheta
+    scalar thresholdTheta = inputParameters.lookupOrDefault("thresholdTheta",1.0025);
+   
     // Platelet diameter length
     dimensionedScalar Pdiam
     {
