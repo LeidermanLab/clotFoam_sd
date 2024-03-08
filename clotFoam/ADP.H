@@ -28,9 +28,13 @@ if ( mag(tcount - sigma_dt) <= runTime.deltaTValue() )
         tau[k] = tau[k+1];
     }
 
-    // Update current ddt_Pbnew and tau
+    // Update current ddt_Pbnew, set = 0 if ddt_Pbnew < 0 (no new ADP released)
     ddt_Pbnew[sigma_N] = 
         pltConst.Pmax*(Theta_A-Theta_A.oldTime()) / runTime.deltaT();
+    
+    ddt_Pbnew[sigma_N] = max(0*ddt_Pbnew[sigma_N], ddt_Pbnew[sigma_N]);
+
+    // Update tau
     tau[sigma_N] = runTime.time().value();
 
     // Integrate sigma_release
