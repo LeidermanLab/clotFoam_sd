@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
         #include "plateletTransport.H" 
 
         // Check if Theta_T > 1, if so refine deltaT and try again
-        if (max(Theta_T).value() >= threshold)
+        if (max(Theta_T).value() >= threshold && maxCo > minCo)
         {
             refinements++;
             threshold = min(threshold + 0.005, 1.015);
