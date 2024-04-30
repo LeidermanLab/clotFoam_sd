@@ -8,13 +8,13 @@ if ( min(p).value() < 0 && runTime.time().value() > 1.0 )
     FatalError<< nl << exit(FatalError);
 }
 
-// Check if Theta_T is larger than 1.01
-if ( max(Theta_T).value() > 1.01 )
+// Check if Theta_T is larger than 1.015
+if ( max(Theta_T).value() > 1.015 )
 {
     
-    Info<< "!!! Total Platelet Fraction Exceeds 1.01 !!!" <<endl;
+    Info<< "!!! Total Platelet Fraction Exceeds 1.015 !!!" <<endl;
     Info<< "\n!!!!! max(Theta_T) = "<< max(Theta_T).value()
-    <<" > 1.01 at t = " << 
+    <<" > 1.015 at t = " << 
     runTime.time().value() << " !!!!!"<< endl;
     FatalError<< nl << exit(FatalError);
 }

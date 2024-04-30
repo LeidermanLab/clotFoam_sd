@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     // Define parameters for controling CFL and refining when needed
     scalar maxCoControlDict = 1.;
     scalar maxCoRefine = 1.;
-    scalar minCo = 0.1;
+    scalar minCo = 0.25;
     label refinements = 0;
     label maxRefinements = 20;
     scalar& threshold = pltConst.thresholdTheta;
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
         if (max(Theta_T).value() >= threshold)
         {
             refinements++;
-            threshold = min(threshold + 0.005, 1.01);
+            threshold = min(threshold + 0.005, 1.015);
             #include "refineDeltaT.H"
             #include "solveFluids.H"
             shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
         Plt.updateFractions();
         
         // Check if Theta_T > 1, if so refine h_rxn and try again
-        if (max(Theta_T).value() >= 1.01)
+        if (max(Theta_T).value() >= 1.015)
         {
             Info << "\n!!! Platelet Reaction Refinement !!!" << nl 
             << "Time = " << runTime.time().value()  
