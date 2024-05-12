@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     // Define parameters for controling CFL and refining when needed
     scalar maxCoControlDict = 1.;
     scalar maxCoRefine = 1.;
-    scalar minCo = 0.25;
+    scalar minCo = 0.20; //was .25
     label refinements = 0;
     label maxRefinements = 20;
     scalar& threshold = pltConst.thresholdTheta;
