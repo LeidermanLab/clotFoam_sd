@@ -1,4 +1,4 @@
-maxCoRefine = maxCo / 2.;
+maxCoRefine = 0.9*maxCo;
 
 Info << "\nTime = " << runTime.timeName() 
 << "\n!!!!! max(Theta_T) = "<< max(Theta_T).value()
@@ -19,7 +19,7 @@ if ( refinements > maxRefinements )
 runTime.TimeState::operator=(tSCurrent);
     
 // Refine deltaT by decreasing maxCo and update time
-maxCo = max(minCo, maxCo * .9); // was 0.5 * prevMaxCo
+maxCo = max(minCo, maxCo * 0.9); // was 0.5 * prevMaxCo
 #include "CourantNo.H"
 #include "setDeltaT.H"
 runTime++;
