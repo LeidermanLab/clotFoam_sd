@@ -122,67 +122,19 @@ class Species_platelet : public Species
                             );
         }
 
-        // Shear-dependent adhesion on-rate function S_{adh+}
-        volScalarField sAdhOn()
+        // Shear-dependent linear function for vWF on/off rates
+        volScalarField linearScaling
+        (
+            const dimensionedScalar& K_L,
+            const dimensionedScalar& K_H
+        )
         {
+            const volScalarField& S = shearRate;
+            const dimensionedScalar& S_L = c.lowShearRate; 
+            const dimensionedScalar& S_H = c.highShearRate; 
             // For testing, we make the sAdhOn function 1 everywhere
-            return 0.*Theta_B + 1.;
+            return K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L);
         }
-
-        volScalarField sAdhOff()
-        {
-            // For testing, we make the sAdhOff function 1 everywhere
-            return 0.*Theta_B  + 1.;
-        }
-
-        // Shear-dependent cohesion on-rate function S_{coh+}
-        volScalarField sCohOn()
-        {
-            // For testing, we make the sCohOn function 1 everywhere
-            return 0.*Theta_B  + 1.;
-        }
-
-        // Shear-dependent cohesion off-rate function S_{coh-}
-        volScalarField sCohOff()
-        {
-            // For testing, we make the sCohOff function 1 everywhere
-            return 0.*Theta_B  + 1.;
-        }
-
-        /*
-        volScalarField sAdhOn()
-        {
-            return 0.5 * ( 1. 
-                   + tanh( c.sigmaAdhOn * (shearRate - c.sAdhOn_C) / c.sAdhOn_C ));
-        }
-        
-
-        // Shear-dependent cohesion on-rate function S_{coh+}
-        volScalarField sCohOn()
-        {
-            return 0.5 * ( 1. 
-                   + tanh(c.sigmaCohOn * (shearRate - c.sCohOn_C) / c.sCohOn_C));
-        }
-
-        
-        
-        // Shear-dependent adhesion off-rate function S_{adh-}
-        volScalarField sAdhOff()
-        {
-            return ( exp(c.sAdhOff_a1 * shearRate / c.sAdhOff_C)
-                   + exp(c.sAdhOff_a2 * shearRate / c.sAdhOff_C)
-                   + exp(c.sAdhOff_a3 * shearRate / c.sAdhOff_C) ) / 3.;
-        }
-        
-
-        // Shear-dependent cohesion off-rate function S_{coh-}
-        volScalarField sCohOff()
-        {
-            return ( exp(c.sCohOff_a1 * shearRate / c.sCohOff_C)
-                   + exp(c.sCohOff_a2 * shearRate / c.sCohOff_C)
-                   + exp(c.sCohOff_a3 * shearRate / c.sCohOff_C) ) / 3.;
-        }
-        */
 
         // Shear-dependent activation on-rate function S_{act}
         volScalarField sAct()
@@ -225,11 +177,11 @@ class Species_platelet : public Species
             const volScalarField& E2 = fluidPhase->field[3];
 
             // Temporary volScalarFields
-            const volScalarField S_AdhOn = sAdhOn();
-            const volScalarField S_AdhOff = sAdhOff();
-            const volScalarField S_CohOn = sCohOn();
-            const volScalarField S_CohOff = sCohOff();
-            const volScalarField S_Act = sAct();
+            const volScalarField K_AdhOnVwf = linearScaling(c.kAdhVwfOn300,c.kAdhVwfOn1500);
+            const volScalarField K_AdhOffVwf = linearScaling(c.kAdhVwfOff300,c.kAdhVwfOff1500);
+            const volScalarField K_CohOnVwfPmax = linearScaling(c.kCohVwfOnPmax300,c.kCohVwfOnPmax300);
+            const volScalarField K_CohOff = linearScaling(c.kCohVwfOff300,c.kCohVwfOff1500);
+            const volScalarField K_ActVwf = c.kActVwf * sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,c.ADP_shift,ADP);
             const volScalarField A_E2 = A(c.kActE2,c.E2_ast,c.E2_deg,c.E2_shift,E2); 
             volScalarField gEtaU = g(eta_U); 
@@ -249,51 +201,51 @@ class Species_platelet : public Species
             );
             
             // Pmu: Mobile Unactivated 
-            k[0] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pmu 
-                    + c.kAdhVwfOff * S_AdhOff * Pseu
-                    - c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA)* Pmu
-                    + c.kCohVwfOff * S_CohOff * Pbvu
+            k[0] = - K_AdhOnVwf * Hadh_x_seBoundPlts * Pmu 
+                    + K_AdhOffVwf * Pseu
+                    - K_CohOnVwfPmax * (gEtaU + gEtaA)* Pmu
+                    + K_CohOff * Pbvu
                     - (A_ADP + A_E2)*Pmu;
             
             // Pma: Mobile Activated 
-            k[1] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
-                   - c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA) * Pma
-                   - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pma
-                   + c.kCohVwfOff * S_CohOff * Pbva
+            k[1] = - K_AdhOnVwf * Hadh_x_seBoundPlts * Pma  
+                   - K_CohOnVwfPmax * (gEtaU + gEtaA) * Pma
+                   - K_CohOnVwfPmax * gEtaA * Pma
+                   + K_CohOff * Pbva
                    + (A_ADP + A_E2)*Pmu;
             
             // Pbvu: vWF Bound Unctivated 
-            k[2] = - c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pbvu
-                   + c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA)* Pmu
-                   - c.kCohVwfOff * S_CohOff * Pbvu
+            k[2] = - K_AdhOnVwf * Hadh_x_seBoundPlts * Pbvu
+                   + K_CohOnVwfPmax * (gEtaU + gEtaA)* Pmu
+                   - K_CohOff * Pbvu
                    - (A_ADP + A_E2) * Pbvu
-                   - c.kActVwf * S_Act * Pbvu;
+                   - K_ActVwf * Pbvu;
             
             // Pbva: vWF Bound Activated 
             k[3] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbva
-                   + c.kCohVwfOnPmax * cohOnOff * S_CohOn * (gEtaU + gEtaA) * Pma
-                   - c.kCohVwfOff * S_CohOff * Pbva
-                   - c.kCohFbgOnPmax * S_CohOn * gEtaA * Pbva
+                   + K_CohOnVwfPmax * (gEtaU + gEtaA) * Pma
+                   - K_CohOff * Pbva
+                   - K_CohOnVwfPmax * gEtaA * Pbva
                    + (A_ADP + A_E2) * Pbvu
-                   + c.kActVwf * S_Act * Pbvu;
+                   + K_ActVwf * Pbvu;
             
             // Pbfa: Fibrinogen Bound Activated
             k[4] = - c.kAdhCol * Hadh_x_seBoundPlts * Pbfa
-                   + c.kCohFbgOnPmax  * cohOnOff * S_CohOn * gEtaA * Pma 
-                   + c.kCohFbgOnPmax  * S_CohOn * gEtaA * Pbva;
+                   + K_CohOnVwfPmax * gEtaA * Pma 
+                   + K_CohOnVwfPmax * gEtaA * Pbva;
                    
             // Pseu: SE-Bound Unactivated
-            k[5] =  c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * (Pmu + Pbvu) 
-                    - c.kAdhVwfOff * S_AdhOff * Pseu
+            k[5] =  K_AdhOnVwf * Hadh_x_seBoundPlts * (Pmu + Pbvu) 
+                    - K_AdhOffVwf * Pseu
                     - (A_ADP + A_E2) * Pseu
-                    - c.kActVwf * S_Act * Pseu
+                    - K_ActVwf * Pseu
                     - c.kActCol * Pseu;
 
             // Psea: SE-Bound Activated
-            k[6] = c.kAdhVwfOn * S_AdhOn * Hadh_x_seBoundPlts * Pma  
+            k[6] = K_AdhOnVwf * Hadh_x_seBoundPlts * Pma  
                    + c.kAdhCol * Hadh_x_seBoundPlts * (Pbva + Pbfa)
                    + (A_ADP + A_E2) * Pseu
-                   + c.kActVwf * S_Act * Pseu
+                   + K_ActVwf * Pseu
                    + c.kActCol * Pseu;
 
         }
