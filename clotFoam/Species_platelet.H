@@ -179,7 +179,7 @@ class Species_platelet : public Species
             // Temporary volScalarFields
             const volScalarField K_AdhOnVwf = linearScaling(c.kAdhVwfOn300,c.kAdhVwfOn1500);
             const volScalarField K_AdhOffVwf = linearScaling(c.kAdhVwfOff300,c.kAdhVwfOff1500);
-            const volScalarField K_CohOnVwfPmax = linearScaling(c.kCohVwfOnPmax300,c.kCohVwfOnPmax300);
+            const volScalarField K_CohOnVwfPmax = linearScaling(c.kCohVwfOnPmax300,c.kCohVwfOnPmax1500);
             const volScalarField K_CohOff = linearScaling(c.kCohVwfOff300,c.kCohVwfOff1500);
             const volScalarField K_ActVwf = c.kActVwf * sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,c.ADP_shift,ADP);
