@@ -57,6 +57,14 @@ struct plateletConstants
         inputParameters.lookup("highShearRate")
     };
 
+    // Value of max shear rate = 2500 (default)
+    dimensionedScalar maxShearRate
+    {
+        "maxShearRate",
+        dimless/dimTime,
+        inputParameters.lookupOrDefault("maxShearRate",2500.0)
+    };
+
     // Platelet adhesion binding on-rate via collagen
     dimensionedScalar kAdhCol
     {

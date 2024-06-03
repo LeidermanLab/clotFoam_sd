@@ -122,7 +122,7 @@ class Species_platelet : public Species
                             );
         }
 
-        // Shear-dependent linear function for vWF on/off rates
+        // Shear-dependent linear function for vWF off rates
         volScalarField linearScaling
         (
             const dimensionedScalar& K_L,
@@ -132,8 +132,30 @@ class Species_platelet : public Species
             const volScalarField& S = shearRate;
             const dimensionedScalar& S_L = c.lowShearRate; 
             const dimensionedScalar& S_H = c.highShearRate; 
-            // For testing, we make the sAdhOn function 1 everywhere
+
+            // 1st order Lagrange interpolating polynomial
             return K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L);
+        }
+
+        // Thresholded shear-dependent linear function for vWF on rates
+        volScalarField minLinearScaling
+        (
+            const dimensionedScalar& K_L,
+            const dimensionedScalar& K_H
+        )
+        {
+            const volScalarField& S = shearRate;
+            const dimensionedScalar& S_L = c.lowShearRate; 
+            const dimensionedScalar& S_H = c.highShearRate; 
+            const dimensionedScalar& S_M = c.maxShearRate;
+
+            // 1st order Lagrange interpolating polynomial to S_M, then flat
+            return 
+            min
+            (
+                K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L),
+                K_L * (S_M-S_H+0*S)/(S_L-S_H) + K_H * (S_M-S_L+0*S)/(S_H-S_L)
+            ) ;
         }
 
         // Shear-dependent activation on-rate function S_{act}
@@ -177,9 +199,9 @@ class Species_platelet : public Species
             const volScalarField& E2 = fluidPhase->field[3];
 
             // Temporary volScalarFields
-            const volScalarField K_AdhOnVwf = linearScaling(c.kAdhVwfOn300,c.kAdhVwfOn1500);
+            const volScalarField K_AdhOnVwf = minLinearScaling(c.kAdhVwfOn300,c.kAdhVwfOn1500);
             const volScalarField K_AdhOffVwf = linearScaling(c.kAdhVwfOff300,c.kAdhVwfOff1500);
-            const volScalarField K_CohOnVwfPmax = linearScaling(c.kCohVwfOnPmax300,c.kCohVwfOnPmax1500);
+            const volScalarField K_CohOnVwfPmax = minLinearScaling(c.kCohVwfOnPmax300,c.kCohVwfOnPmax1500);
             const volScalarField K_CohOff = linearScaling(c.kCohVwfOff300,c.kCohVwfOff1500);
             const volScalarField K_ActVwf = c.kActVwf * sAct();
             const volScalarField A_ADP = A(c.kActADP,c.ADP_ast,c.ADP_deg,c.ADP_shift,ADP);
