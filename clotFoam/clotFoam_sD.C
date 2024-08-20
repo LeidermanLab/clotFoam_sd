@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
         if (max(Theta_T).value() >= threshold && maxCo > minCo)
         {
             refinements++;
-            threshold = min(threshold + 0.005, 1.015);
+            threshold = min(threshold + 0.05, 1.5);
             #include "refineDeltaT.H"
             #include "solveFluids.H"
             shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
         Plt.updateFractions();
         
         // Check if Theta_T > 1, if so refine h_rxn and try again
-        if (max(Theta_T).value() >= 1.015)
+        if (max(Theta_T).value() >= threshold)
         {
             Info << "\n!!! Platelet Reaction Refinement !!!" << nl 
             << "Time = " << runTime.time().value()  
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
         // Check if solution is diverging
         #include "isSolutionDiverging.H"
       
-    } // End time loop
+    } // End of time loop
 
     Info<< "End\n" << endl;
 
