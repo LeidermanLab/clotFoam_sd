@@ -1,0 +1,453 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      Hadh;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField  #codeStream
+    {
+	// Get length and adhesion parameters
+	#include "$FOAM_CASE/constant/inputParameters"
+
+    code
+    #{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+        scalarField fld(mesh.nCells(), 0);
+
+        // Boundaries of adhesion region
+        scalar adh = $Pdiam;
+        scalar bottom = $l_legs;
+        scalar bottom_pls_adh = bottom + adh;
+        scalar top = $l_legs_pls_w_inj;
+        scalar top_minus_adh = top - adh;
+        scalar left = $w_chan;
+        scalar right = $w_chan_pls_l_inj;
+        scalar back = $z1_inj;
+        scalar back_pls_adh = back + adh;
+        scalar front = $z2_inj;
+        scalar front_minus_adh = front - adh;
+
+        // Gaussian Parameters
+        double Pdiam = $Pdiam; // Diameter of a platelet 
+        double sigma_x_xz = 0.8*Pdiam;   // Standard deviation in x (x-z plane)
+        double sigma_y_xz = 3*Pdiam;     // Standard deviation in y (x-z plane)
+        double sigma_z_xz = 0.8*Pdiam;   // Standard deviation in z (x-z plane)
+
+        double sigma_x_xy = 0.8*Pdiam;   // Standard deviation in x (x-y plane)
+        double sigma_y_xy = 0.8*Pdiam;     // Standard deviation in y (x-y plane)
+        double sigma_z_xy = 3*Pdiam;   // Standard deviation in z (x-y plane)
+
+        // Halton points params for bottom of injury channel
+        int Np_bt = 114;          
+        int base_x_bt = 2; // Base for Halton sequence in x dimension (max 5)
+        int base_z_bt = 3; // Base for Halton sequence in z dimension (max 6)
+        double xn_bt[Np_bt];
+        double zn_bt[Np_bt];
+
+        // Halton points params for top of injury channel
+        int Np_t = 114;          
+        int base_x_t = 3; // Base for Halton sequence in x dimension (max 5)
+        int base_z_t = 2; // Base for Halton sequence in z dimension (max 6)
+        double xn_t[Np_t];
+        double zn_t[Np_t];
+
+        // Halton points params for back of injury channel
+        int Np_bk = 34;          
+        int base_x_bk = 2; // Base for Halton sequence in x dimension (max 5)
+        int base_y_bk = 3; // Base for Halton sequence in y dimension (max 6)
+        double xn_bk[Np_bk];
+        double yn_bk[Np_bk];
+
+        // Halton points params for front of injury channel
+        int Np_f = 34;          
+        int base_x_f = 3; // Base for Halton sequence in x dimension (max 5)
+        int base_y_f = 2; // Base for Halton sequence in y dimension (max 6)
+        double xn_f[Np_f];
+        double yn_f[Np_f];
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        // Bottom of injury channel
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        // Halton Points
+        for (int i = 1; i < Np_bt+1; i++) 
+        {
+            int n = i;
+            double points_x = 0.;
+            double points_z = 0.;
+            double f_x = 1.0;
+            double f_z = 1.0;
+
+            // Compute Halton points for x dimension
+            while (n > 0) 
+            {
+                f_x = f_x / base_x_bt;
+                points_x = points_x + f_x * (n % base_x_bt);
+                n = n / base_x_bt;
+            }
+            xn_bt[i-1] = points_x;
+
+            n = i; // Reset n for z dimension
+
+            // Compute Halton points for z dimension
+            while (n > 0) 
+            {
+                f_z = f_z / base_z_bt;
+                points_z = points_z + f_z * (n % base_z_bt);
+                n = n / base_z_bt;
+            }
+            zn_bt[i-1] = points_z;
+        }
+
+        // Scale Halton points for where injury is located
+        for (int i = 0; i < Np_bt; i++) 
+        {
+            xn_bt[i] = left + (right - left) * xn_bt[i];
+            zn_bt[i] = back + (front - back) * zn_bt[i];
+        }
+
+        // bottom
+        forAll(mesh.C(),cellI)
+        {
+
+            vector CC = mesh.C()[cellI];
+            auto x = CC.x();
+            auto y = CC.y();
+            auto z = CC.z();
+            
+            if (x >= left && x <= right)
+            {
+            if (z >= back && z <= front)
+            {
+                // bottom
+                if(y >= bottom && y <= bottom_pls_adh)
+                {
+                    double y0 = bottom;
+                    double G = 0.;
+                        for(int i = 0; i < Np_bt; i++)
+                        {
+                            // Compute nth Gaussian                         
+                            double gn = exp
+                            (
+                                - pow(x - xn_bt[i], 2) / (2 * pow(sigma_x_xz, 2)) 
+                                - pow(y - y0, 2) / (2 * pow(sigma_y_xz, 2)) 
+                                - pow(z - zn_bt[i], 2) / (2 * pow(sigma_z_xz, 2))
+                            );
+                            G = min(1.0+0*G, G + gn);     
+                        }
+                        fld[cellI] = G;
+                }
+            }
+            }
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        // Top of injury channel
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        // Halton Points
+        for (int i = 1; i < Np_t+1; i++) 
+        {
+            int n = i;
+            double points_x = 0.;
+            double points_z = 0.;
+            double f_x = 1.0;
+            double f_z = 1.0;
+
+            // Compute Halton points for x dimension
+            while (n > 0) 
+            {
+                f_x = f_x / base_x_t;
+                points_x = points_x + f_x * (n % base_x_t);
+                n = n / base_x_t;
+            }
+            xn_t[i-1] = points_x;
+
+            n = i; // Reset n for z dimension
+
+            // Compute Halton points for z dimension
+            while (n > 0) 
+            {
+                f_z = f_z / base_z_t;
+                points_z = points_z + f_z * (n % base_z_t);
+                n = n / base_z_t;
+            }
+            zn_t[i-1] = points_z;
+        }
+
+        // Scale Halton points for where injury is located
+        for (int i = 0; i < Np_t; i++) 
+        {
+            xn_t[i] = left + (right - left) * xn_t[i];
+            zn_t[i] = back + (front - back) * zn_t[i];
+        }
+
+        // top
+        forAll(mesh.C(),cellI)
+        {
+
+            vector CC = mesh.C()[cellI];
+            auto x = CC.x();
+            auto y = CC.y();
+            auto z = CC.z();
+            
+            if (x >= left && x <= right)
+            {
+            if (z >= back && z <= front)
+            {
+                // top
+                if(y >= top_minus_adh && y <= top)
+                {
+                    double y0 = top_minus_adh;
+                    double G = 0.;
+                        for(int i = 0; i < Np_t; i++)
+                        {
+                            // Compute nth Gaussian                         
+                            double gn = exp
+                            (
+                                - pow(x - xn_t[i], 2) / (2 * pow(sigma_x_xz, 2)) 
+                                - pow(y - y0, 2) / (2 * pow(sigma_y_xz, 2)) 
+                                - pow(z - zn_t[i], 2) / (2 * pow(sigma_z_xz, 2))
+                            );
+                            G = min(1.0+0*G, G + gn);     
+                        }
+                        fld[cellI] = G;
+                }
+
+            }
+            }
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        // Back of injury channel
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        // Halton Points
+        for (int i = 1; i < Np_bk+1; i++) 
+        {
+            int n = i;
+            double points_x = 0.;
+            double points_y = 0.;
+            double f_x = 1.0;
+            double f_y = 1.0;
+
+            // Compute Halton points for x dimension
+            while (n > 0) 
+            {
+                f_x = f_x / base_x_bk;
+                points_x = points_x + f_x * (n % base_x_bk);
+                n = n / base_x_bk;
+            }
+            xn_bk[i-1] = points_x;
+
+            n = i; // Reset n for y dimension
+
+            // Compute Halton points for y dimension
+            while (n > 0) 
+            {
+                f_y = f_y / base_y_bk;
+                points_y = points_y + f_y * (n % base_y_bk);
+                n = n / base_y_bk;
+            }
+            yn_bk[i-1] = points_y;
+        }
+
+        // Scale Halton points for where injury is located
+        for (int i = 0; i < Np_bk; i++) 
+        {
+            xn_bk[i] = left + (right - left) * xn_bk[i];
+            yn_bk[i] = bottom + (top - bottom) * yn_bk[i];
+        }
+
+        // back
+        forAll(mesh.C(),cellI)
+        {
+
+            vector CC = mesh.C()[cellI];
+            auto x = CC.x();
+            auto y = CC.y();
+            auto z = CC.z();
+            
+            if (x >= left && x <= right)
+            {
+            if (z >= back && z <= back_pls_adh)
+            {
+                // bottom
+                if(y >= bottom && y <= top)
+                {
+                    double z0 = back;
+                    double G = 0.;
+                        for(int i = 0; i < Np_bk; i++)
+                        {
+                            // Compute nth Gaussian                         
+                            double gn = exp
+                            (
+                                - pow(x - xn_bk[i], 2) / (2 * pow(sigma_x_xy, 2)) 
+                                - pow(y - yn_bk[i], 2) / (2 * pow(sigma_y_xy, 2)) 
+                                - pow(z - z0, 2) / (2 * pow(sigma_z_xy, 2))
+                            );
+                            G = min(1.0+0*G, G + gn);     
+                        }
+                        fld[cellI] = G;
+                }
+            }
+            }
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        // Front of injury channel
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        // Halton Points
+        for (int i = 1; i < Np_f+1; i++) 
+        {
+            int n = i;
+            double points_x = 0.;
+            double points_y = 0.;
+            double f_x = 1.0;
+            double f_y = 1.0;
+
+            // Compute Halton points for x dimension
+            while (n > 0) 
+            {
+                f_x = f_x / base_x_f;
+                points_x = points_x + f_x * (n % base_x_f);
+                n = n / base_x_f;
+            }
+            xn_f[i-1] = points_x;
+
+            n = i; // Reset n for y dimension
+
+            // Compute Halton points for y dimension
+            while (n > 0) 
+            {
+                f_y = f_y / base_y_f;
+                points_y = points_y + f_y * (n % base_y_f);
+                n = n / base_y_f;
+            }
+            yn_f[i-1] = points_y;
+        }
+
+        // Scale Halton points for where injury is located
+        for (int i = 0; i < Np_f; i++) 
+        {
+            xn_f[i] = left + (right - left) * xn_f[i];
+            yn_f[i] = bottom + (top - bottom) * yn_f[i];
+        }
+
+        // front
+        forAll(mesh.C(),cellI)
+        {
+
+            vector CC = mesh.C()[cellI];
+            auto x = CC.x();
+            auto y = CC.y();
+            auto z = CC.z();
+            
+            if (x >= left && x <= right)
+            {
+            if (z >= front_minus_adh && z <= front)
+            {
+                // bottom
+                if(y >= bottom && y <= top)
+                {
+                    double z0 = front_minus_adh;
+                    double G = 0.;
+                        for(int i = 0; i < Np_f; i++)
+                        {
+                            // Compute nth Gaussian                         
+                            double gn = exp
+                            (
+                                - pow(x - xn_f[i], 2) / (2 * pow(sigma_x_xy, 2)) 
+                                - pow(y - yn_f[i], 2) / (2 * pow(sigma_y_xy, 2)) 
+                                - pow(z - z0, 2) / (2 * pow(sigma_z_xy, 2))
+                            );
+                            G = min(1.0+0*G, G + gn);     
+                        }
+                        fld[cellI] = G;
+                }
+            }
+            }
+        }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+        scalar maxG = max(fld);
+        reduce(maxG, maxOp<scalar>()); // For parallel runs
+        fld = fld / maxG;
+
+        writeEntry(os, "", fld);
+    #};
+
+    //- Optional:
+    codeInclude
+    #{
+        #include "fvCFD.H"
+    #};
+
+    //- Optional:
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude  \
+        -I$(LIB_SRC)/meshTools/lnInclude \
+    #};
+};
+
+
+boundaryField
+{
+    inletLeft
+    {
+        type            zeroGradient;
+    }
+
+    inletRight
+    {
+        type            zeroGradient;
+    }
+    
+    outletLeft
+    {
+        type            zeroGradient;
+    }
+
+    outletRight
+    {
+        type            zeroGradient;
+    }
+
+    injuryWalls
+    {
+        type            zeroGradient;
+    }
+    
+    fixedWalls
+    {
+        type            zeroGradient;
+    }
+
+    leftChannelInnerWall
+    {
+        type            zeroGradient;
+    }
+
+    rightChannelInnerWall
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

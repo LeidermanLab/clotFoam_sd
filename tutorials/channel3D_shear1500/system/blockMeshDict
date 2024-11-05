@@ -1,0 +1,114 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1.0; // Not really meters -- length unit = mm
+
+#include "$FOAM_CASE/constant/inputParameters"
+
+convertToMeters 1.0;
+
+Px_l_updown #calc "($x_max - $w_inj) / 2.0 / $x_max";
+Px_l_inj #calc "$w_inj / $x_max";
+Px_cells_up #calc "$Nx_up / $Nx";
+Px_cells_inj #calc "$Nx_inj / $Nx";
+Px_cells_down #calc "$Nx_down / $Nx";
+
+vertices
+(
+    (0 0 0) // 0
+    ($x_max 0 0) // 1
+    ($x_max $y_max 0) // 2
+    (0 $y_max 0) // 3
+    (0 0 $z_max) // 4
+    ($x_max 0 $z_max) // 5
+    ($x_max $y_max $z_max) // 6
+    (0 $y_max $z_max) // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) 
+        ($Nx $Ny $Nz) 
+        simpleGrading 
+        (
+            /*
+            ( //x-dir
+              // % of x-length, % of cells, expansion 
+                ($Px_l_updown $Px_cells_up $Rx_up) 
+                ($Px_l_inj $Px_cells_inj $Rx_inj)  
+                ($Px_l_updown $Px_cells_down $Rx_dwn) 
+            )
+            */
+            ( //x-dir
+                // % of x-length, % of cells, expansion 
+                  (0.1875 0.1471 $Rx_up) 
+                  (0.6250 0.7353 $Rx_inj)  
+                  (0.1875 0.1176 $Rx_down) 
+              )
+            //y-dir
+            $Ry 
+            ( //z-dir
+                (0.1667 0.1149 $Rz_back) // % of z-length, % of cells, expansion 
+                (0.6666 0.7702 $Rz_inj)  
+                (0.1667 0.1149 $Rz_front) 
+            )
+        ) 
+
+);
+
+edges
+(
+);
+
+boundary
+(
+    inletVessel
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+    
+    outletVessel
+    {
+        type patch;
+        faces
+        (
+            (1 5 6 2)
+        );
+    }
+    
+    fixedWalls
+    {
+        type wall;
+        faces
+        (
+            (0 1 2 3) // back 
+            (4 5 6 7) // front
+            (0 4 5 1) // bottom
+            (3 7 6 2) // top
+        );
+    }
+    
+
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

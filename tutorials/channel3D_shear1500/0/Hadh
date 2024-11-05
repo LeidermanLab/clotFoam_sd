@@ -1,0 +1,163 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      Hadh;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField  #codeStream
+    {
+	// Get length and adhesion parameters
+	#include "$FOAM_CASE/constant/inputParameters"
+
+        code
+        #{
+            const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+            const fvMesh& mesh = refCast<const fvMesh>(d.db());
+            scalarField fld(mesh.nCells(), 0);
+
+            // Gaussian Parameters
+            double Pdiam = $Pdiam; // Diameter of a platelet 
+            double sigma_x = 0.8*Pdiam;   // Standard deviation in x 
+            double sigma_y = 3*Pdiam;     // Standard deviation in y 
+            double sigma_z = 0.8*Pdiam;   // Standard deviation in z
+
+            Info << "sigma_x" << sigma_x << endl;
+
+            // Halton Point Parameters
+            int Np = 150;          
+            int base_x = 2; // Base for Halton sequence in x dimension (max 5)
+            int base_z = 3; // Base for Halton sequence in z dimension (max 6)
+
+            // Generate the Halton points in 2D
+            double xn[Np];
+            double zn[Np];
+            for (int i = 1; i < Np+1; i++) 
+            {
+                int n = i;
+                double points_x = 0.;
+                double points_z = 0.;
+                double f_x = 1.0;
+                double f_z = 1.0;
+
+                // Compute Halton points for x dimension
+                while (n > 0) 
+                {
+                    f_x = f_x / base_x;
+                    points_x = points_x + f_x * (n % base_x);
+                    n = n / base_x;
+                }
+                xn[i-1] = points_x;
+
+                n = i; // Reset n for z dimension
+
+                // Compute Halton points for z dimension
+                while (n > 0) 
+                {
+                    f_z = f_z / base_z;
+                    points_z = points_z + f_z * (n % base_z);
+                    n = n / base_z;
+                }
+                zn[i-1] = points_z;
+            }
+
+            // Scale Halton points for where injury is located
+            double l_start = $l_edge_Adh + $Pdiam;
+            double l_end = $r_edge_Adh - $Pdiam;
+            double w_start = $back_edge_Adh + $Pdiam;
+            double w_end = $front_edge_Adh - $Pdiam;
+            for (int i = 0; i < Np; i++) 
+            {
+                xn[i] = l_start + (l_end - l_start) * xn[i];
+                zn[i] = w_start + (w_end - w_start) * zn[i];
+            }
+
+            // Calculate Gaussians centered at (xn[i],0,zn[i])
+            forAll(mesh.C(),cellI)
+            {
+            	vector CC = mesh.C()[cellI];
+                auto x = CC.x();
+                auto y = CC.y();
+                auto z = CC.z();
+
+                if( y <= Pdiam )
+            	{
+                if (x > $l_edge_Adh - $Pdiam && x < $r_edge_Adh + $Pdiam)
+                {
+                if (z > $back_edge_Adh - $Pdiam && z < $front_edge_Adh + $Pdiam)
+                {
+                        double G = 0.;
+                        for(int i = 0; i < Np; i++)
+                        {
+                            // Compute nth Gaussian                         
+                            double gn = exp
+                            (
+                                - pow(x - xn[i], 2) / (2 * pow(sigma_x, 2)) 
+                                - pow(y, 2) / (2 * pow(sigma_y, 2)) 
+                                - pow(z - zn[i], 2) / (2 * pow(sigma_z, 2))
+                            );
+                            G = min(1.0+0*G, G + gn);     
+                        }
+                        fld[cellI] = G;
+                }
+                }
+                }
+
+            }
+
+            scalar maxG = max(fld);
+            reduce(maxG, maxOp<scalar>()); // For parallel runs
+            fld = fld / maxG;
+
+            writeEntry(os, "", fld);
+        #};
+
+        //- Optional:
+        codeInclude
+        #{
+            #include "fvCFD.H"
+        #};
+
+        //- Optional:
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude  \
+            -I$(LIB_SRC)/meshTools/lnInclude \
+        #};
+    };
+
+
+boundaryField
+{
+    inletVessel
+    {
+        type            zeroGradient;
+    }
+    
+    outletVessel
+    {
+        type            zeroGradient;
+    }
+    
+    fixedWalls
+    {
+        type            zeroGradient;
+    }
+   
+    injuryWalls
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //
