@@ -1,6 +1,6 @@
-# clotFoam
+# clotFoam_sD
 ## Overview
-clotFoam provides a general framework for simulating platelet-mediated coagulation in OpenFOAM.  The solver is based on the platelet aggregation model of Leiderman & Fogelson 2011, with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by Fogelson & Kuharsky 1998.
+clotFoam_sD provides a general framework for simulating shear-dependent platelet-mediated coagulation in OpenFOAM.  The solver is based on the platelet aggregation model of Leiderman & Fogelson 2011, with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by Fogelson & Kuharsky 1998.
 The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openfoam.com/) to solve the fluids/pressure equations. Target applications for clotFoam include:
 
 * platelet-mediated coagulation
@@ -15,27 +15,27 @@ clotFoam has been developed with the [OpenFoam v9 libraries](https://openfoam.or
 After installing OpenFoam v9, navigate to a working folder in a shell terminal, clone the git code repository, and build using OpenFoam v9. <em>Note: MacOS users will need to launch the OpenFoam v9 application using Docker prior to building.</em>
 
 ```
-$ git clone https://github.com/dmontgomery016/clotFoam.git clotFoam
+$ git clone https://github.com/dmontgomery016/clotFoam_shearDependence.git clotFoam
 $ cd clotFoam/clotFoam
 $ wclean
 $ wmake
 ```
 
 ## Tutorial cases
-The clotFoam download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constan/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
+The clotFoam_sD download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constan/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
 
 ```
 $ cd ../tutorials/rectangle2D
 Delete any old simulation files (if present):
 $ rm -r [1-9]* 0.*
 $ blockMesh
-$ clotFoam
+$ clotFoam_sD
 ```
 
-The platelet-mediated coagulation modeled by clotFoam occurs on the real time scale of 10's of minutes.  Therefore, it may take upwards of one day of compute time to simulate clot growth.  
+The shear-dependent platelet-mediated coagulation modeled by clotFoam_sD occurs on the real time scale of 10's of minutes.  Therefore, it may take upwards of one day of compute time to simulate clot growth.  
 
 ## Parallelization
-To run clotFoam in parallel with 6 processors, first edit the decomposeParDict file located in the system directory so that the number of subdomains is 6, and the decomposition method is scotch:
+To run clotFoam_sD in parallel with 6 processors, first edit the decomposeParDict file located in the system directory so that the number of subdomains is 6, and the decomposition method is scotch:
 ```
 numberOfSubdomains 6;
 
@@ -44,10 +44,10 @@ method      scotch;
 Then following the blockMesh command, decompose the domain and run with 6 processors:
 ```
 $ decomposePar
-$ mpirun -np 6 clotFoam -parallel > log &
+$ mpirun -np 6 clotFoam_sD -parallel > log &
 ```
 
-When using an HPC system that utilizes a slurm filesystem, consider using the following outline for the .slurm file for running clotFoam on 2 nodes with a total of 48 cores:
+When using an HPC system that utilizes a slurm filesystem, consider using the following outline for the .slurm file for running clotFoam_sD on 2 nodes with a total of 48 cores:
 ```
 #! /bin/bash -x
 #SBATCH --job-name="clotFoam_simulation"
@@ -85,7 +85,7 @@ source $OPENFOAM_DIR/etc/bashrc
 # Run the job
 echo "running job"
 srun -N $nodes --ntasks-per-node=$cores_per_node --pty bash
-time mpirun -np $total_cores clotFoam -parallel > log 2>&1 
+time mpirun -np $total_cores clotFoam_sD -parallel > log 2>&1 
 echo "job has finished"               
 ```
 
