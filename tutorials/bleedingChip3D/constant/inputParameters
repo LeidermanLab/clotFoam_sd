@@ -79,11 +79,12 @@ Dp 2.5e-5; // Diffusion rate for platelets [mm^2 / s]
 Plt_0 2.5e+05; // Mobile platelet inlet number density [1 / mm^3]
 t0_Plt 0.1; // When the platelets start to enter the domain
 tf_Plt 0.2; // When the platelets reach Plt_0 at inlet
-thresholdTheta 1.0025; // Max allowed Theta_T before deltaT is refined
+thresholdTheta 1.005; // Max allowed Theta_T before deltaT is refined
 
 // Shear rates from experiments
 lowShearRate 300.0; // [1 / s]
 highShearRate 1500.0; // [1 / s]
+maxShearRate 10000.0; // [1 / s] 
 
 // Platelet Adhesion Params
 kAdhCol 3.3212e-08; // on-rate of adhesion via collagen [mm^3 / s]

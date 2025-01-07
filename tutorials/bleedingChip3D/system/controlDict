@@ -22,13 +22,13 @@ smoothHadh      false;
 
 startFrom       startTime;
 
-startTime       0; 
+startTime 0; 
 
 stopAt          endTime;
 
-endTime         650; 
+endTime 660; 
 
-deltaT          2e-5;
+deltaT          1e-05;
 
 writeControl    adjustableRunTime;
 
@@ -50,7 +50,7 @@ runTimeModifiable true;
 
 adjustTimeStep yes;
 
-maxCo 0.9;
+maxCo 0.75;
 
 maxDeltaT 1e-2;
 
