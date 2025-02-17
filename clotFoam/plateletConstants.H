@@ -16,6 +16,9 @@ struct plateletConstants
 
     // Threshold value for when to refine deltaT. Refine if Theta_T > thresholdTheta
     scalar thresholdTheta = inputParameters.lookupOrDefault("thresholdTheta",1.0025);
+
+    // Max threshold for ThetaT where an error is thrown
+    scalar thresholdThetaMax = inputParameters.lookupOrDefault("thresholdThetaMax",1.015);
    
     // Platelet diameter length
     dimensionedScalar Pdiam

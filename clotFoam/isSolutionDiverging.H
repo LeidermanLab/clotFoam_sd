@@ -8,15 +8,15 @@ if ( min(p).value() < 0 && runTime.time().value() > 1.0 )
     FatalError<< nl << exit(FatalError);
 }
 
-/*
-// Check if Theta_T is larger than 1.015
-if ( max(Theta_T).value() > 1.5 )
+
+// Check if Theta_T is larger than the maximum allowed threshold
+if ( max(Theta_T).value() > pltConst.thresholdThetaMax )
 {
-    
-    Info<< "!!! Total Platelet Fraction Exceeds 1.5 !!!" <<endl;
+    Info<< "!!! Total Platelet Fraction Exceeds "
+        << pltConst.thresholdThetaMax <<" !!!" <<endl;
     Info<< "\n!!!!! max(Theta_T) = "<< max(Theta_T).value()
-    <<" > 1.1 at t = " << 
-    runTime.time().value() << " !!!!!"<< endl;
+        <<" > " << pltConst.thresholdThetaMax <<" at t = " 
+        << runTime.time().value() << " !!!!!"<< endl;
     FatalError<< nl << exit(FatalError);
 }
-*/
+

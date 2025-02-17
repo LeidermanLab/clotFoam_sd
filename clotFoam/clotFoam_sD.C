@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
         if (max(Theta_T).value() >= threshold && maxCo > minCo)
         {
             refinements++;
-            threshold = min(threshold + 0.05, 1.5);
+            threshold = min(threshold + 0.005, pltConst.thresholdThetaMax);
             #include "refineDeltaT.H"
             #include "solveFluids.H"
             shearRate = Foam::sqrt(2.0) * mag(symm( fvc::grad(U) )) ;
