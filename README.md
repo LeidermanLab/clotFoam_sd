@@ -1,6 +1,6 @@
-# clotFoam_sD
+# ShearDependentPltAgg
 ## Overview
-clotFoam_sD provides a general framework for simulating shear-dependent platelet-mediated coagulation in OpenFOAM.  The solver is based on the platelet aggregation model of Leiderman & Fogelson 2011, with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by Fogelson & Kuharsky 1998.
+ShearDependentPltAgg provides a general framework for simulating shear-dependent platelet-mediated coagulation in OpenFOAM based on our original clotFoam solver.  The solver is based on the platelet aggregation model of Leiderman & Fogelson 2011, with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by Fogelson & Kuharsky 1998.
 The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openfoam.com/) to solve the fluids/pressure equations. Target applications for clotFoam include:
 
 * platelet-mediated coagulation
@@ -10,19 +10,19 @@ The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openf
 
 ## Installation
 
-clotFoam has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam solver, first follow the instructions on this page: [OpenFoam v9 Unbuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
+ShearDependentPltAgg has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam solver, first follow the instructions on this page: [OpenFoam v9 Unbuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
 
 After installing OpenFoam v9, navigate to a working folder in a shell terminal, clone the git code repository, and build using OpenFoam v9. <em>Note: MacOS users will need to launch the OpenFoam v9 application using Docker prior to building.</em>
 
 ```
-$ git clone https://github.com/dmontgomery016/clotFoam_shearDependence.git clotFoam
-$ cd clotFoam/clotFoam
+$ git clone https://github.com/LeidermanLab/ShearDependentPltAgg.git
+$ cd ShearDependentPltAgg/clotFoam
 $ wclean
 $ wmake
 ```
 
 ## Tutorial cases
-The clotFoam_sD download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constan/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
+The ShearDependentPltAgg download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constan/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
 
 ```
 $ cd ../tutorials/rectangle2D
@@ -32,10 +32,10 @@ $ blockMesh
 $ clotFoam_sD
 ```
 
-The shear-dependent platelet-mediated coagulation modeled by clotFoam_sD occurs on the real time scale of 10's of minutes.  Therefore, it may take upwards of one day of compute time to simulate clot growth.  
+The shear-dependent platelet-mediated coagulation modeled by ShearDependentPltAgg occurs on the real time scale of 10's of minutes.  Therefore, it may take upwards of one day of compute time to simulate clot growth.  
 
 ## Parallelization
-To run clotFoam_sD in parallel with 6 processors, first edit the decomposeParDict file located in the system directory so that the number of subdomains is 6, and the decomposition method is scotch:
+To run the solver in parallel with 6 processors, first edit the decomposeParDict file located in the system directory so that the number of subdomains is 6, and the decomposition method is scotch:
 ```
 numberOfSubdomains 6;
 
@@ -136,7 +136,7 @@ The work was generously supported by grants from the National Science Foundation
 
 
 ## Citing This Work
-If you use clotFoam in your work. Please use the following to cite our work:
+If you use ShearDependentPltAgg in your work. Please use the following to cite our work:
 
 D. Montgomery, F. Municchi, K. Leiderman, clotFoam: An Open‐Source Framework to Simulate Blood Clot Formation Under Flow, arXiv, 2023, [https://doi.org/10.48550/arXiv.2304.09180](https://doi.org/10.48550/arXiv.2304.09180).
 
