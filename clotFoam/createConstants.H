@@ -19,6 +19,14 @@ label injuryPatchID = mesh.boundaryMesh().findPatchID("injuryWalls");
 const bool coagReactionsOn =
             runTime.controlDict().lookupOrDefault("coagReactionsOn", true);
 
+if (coagReactionsOn && injuryPatchID < 0)
+{
+    Info<< "\n!!! Error: injuryWalls not defined in mesh !!!" 
+        << "\nWhen coagReactionsOn = true, you must define an injuryWalls patch" 
+        << endl;
+    FatalError<< nl << exit(FatalError);
+}
+
 // Flag for whether or not to smooth the adhesion region
 const bool smoothHadh =
             runTime.controlDict().lookupOrDefault("smoothHadh",false);
