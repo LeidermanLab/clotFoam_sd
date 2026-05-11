@@ -1,0 +1,152 @@
+name: clotFoam-CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+
+permissions:
+  contents: read
+
+jobs:
+
+  spell-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Spell check
+        uses: codespell-project/actions-codespell@v2
+        with:
+          skip: './.git,./tutorials/**/processor*,./tutorials/**/[0-9]*'
+          ignore_words_list: OpenFOAM,icoFoam,clotFoam,wmake,wclean,coag,nd
+
+  run-tutorials-coag-on:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 9
+
+      - name: Compile clotFoam
+        run: |
+          cd clotFoam
+          wclean || true
+          wmake
+
+      - name: Run channel3D_shear300 (coag On)
+        run: |
+          set -o pipefail
+          case_dir="tutorials/channel3D_shear300_coagOn"
+
+          cp -r tutorials/channel3D_shear300 "$case_dir"
+          cd "$case_dir"
+
+          # Run 5 time steps.
+          foamDictionary system/controlDict -entry stopAt -set nextWrite
+          foamDictionary system/controlDict -entry writeControl -set timeStep
+          foamDictionary system/controlDict -entry writeInterval -set 5
+          foamDictionary system/controlDict -entry endTime -remove || true
+
+          # Toggle coagulation reactions.
+          foamDictionary system/controlDict -entry coagReactionsOn -set true
+
+          ./Allmesh
+          clotFoam_sD
+
+      - name: Run channel3D_shear1500 (coag On)
+        run: |
+          set -o pipefail
+          case_dir="tutorials/channel3D_shear1500_coagOn"
+
+          cp -r tutorials/channel3D_shear1500 "$case_dir"
+          cd "$case_dir"
+
+          # Run 5 time steps.
+          foamDictionary system/controlDict -entry stopAt -set nextWrite
+          foamDictionary system/controlDict -entry writeControl -set timeStep
+          foamDictionary system/controlDict -entry writeInterval -set 5
+          foamDictionary system/controlDict -entry endTime -remove || true
+
+          # Toggle coagulation reactions.
+          foamDictionary system/controlDict -entry coagReactionsOn -set true
+
+          ./Allmesh
+          clotFoam_sD
+
+  run-tutorials-coag-off:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 9
+
+      - name: Compile clotFoam
+        run: |
+          cd clotFoam
+          wclean || true
+          wmake
+
+      - name: Run channel3D_shear300 (coag Off)
+        run: |
+          set -o pipefail
+          case_dir="tutorials/channel3D_shear300_coagOff"
+
+          cp -r tutorials/channel3D_shear300 "$case_dir"
+          cd "$case_dir"
+
+          # Run 5 time steps.
+          foamDictionary system/controlDict -entry stopAt -set nextWrite
+          foamDictionary system/controlDict -entry writeControl -set timeStep
+          foamDictionary system/controlDict -entry writeInterval -set 5
+          foamDictionary system/controlDict -entry endTime -remove || true
+
+          # Toggle coagulation reactions.
+          foamDictionary system/controlDict -entry coagReactionsOn -set false
+
+          ./Allmesh
+          clotFoam_sD
+      
+      - name: Run channel3D_shear1500 (coag Off)
+        run: |
+          set -o pipefail
+          case_dir="tutorials/channel3D_shear1500_coagOff"
+
+          cp -r tutorials/channel3D_shear1500 "$case_dir"
+          cd "$case_dir"
+
+          # Run 5 time steps.
+          foamDictionary system/controlDict -entry stopAt -set nextWrite
+          foamDictionary system/controlDict -entry writeControl -set timeStep
+          foamDictionary system/controlDict -entry writeInterval -set 5
+          foamDictionary system/controlDict -entry endTime -remove || true
+
+          # Toggle coagulation reactions.
+          foamDictionary system/controlDict -entry coagReactionsOn -set false
+
+          ./Allmesh
+          clotFoam_sD
