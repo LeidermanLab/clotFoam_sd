@@ -26,10 +26,6 @@ if (coagReactionsOn && injuryPatchID < 0)
           << "Set coagReactionsOn false in controlDict, "
           << "or define an injuryWalls patch before running.\n"                                                                                                        
 	  << exit(FatalError);
-//    Info<< "\n!!! Error: injuryWalls not defined in mesh !!!" 
-//        << "\nWhen coagReactionsOn = true, you must define an injuryWalls patch" 
-//        << endl;
-//    FatalError<< nl << exit(FatalError);
 }
 
 // Flag for whether or not to smooth the adhesion region
