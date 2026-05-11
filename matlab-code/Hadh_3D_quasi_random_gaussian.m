@@ -18,7 +18,7 @@ z_max = 80e-3;      % Upper bound of z dimension [mm]
 % Injury dimensions
 l_inj = 150e-3;     % Length of the injury in x-direction [mm]
 w_inj = 60e-3;     % Width of the injury in the z-direction [mm]
-distFromEdge = Pdiam/4; % The closest a Gausian can get to edge of injury
+distFromEdge = Pdiam/4; % The closest a Gaussian can get to edge of injury
 
 % Number of grid cells in each direction
 Nx = 100;            % number of cells in x-direction
@@ -36,7 +36,7 @@ Nz = 100;            % number of cells in x-direction
 % % Injury dimensions
 % l_inj = 100e-3;     % Length of the injury in x-direction [mm]
 % w_inj = 100e-3;     % Width of the injury in the z-direction [mm]
-% distFromEdge = Pdiam; % The closest a Gausian can get to edge of injury
+% distFromEdge = Pdiam; % The closest a Gaussian can get to edge of injury
 % 
 % % Number of grid cells in each direction
 % Nx = 68;            % number of cells in x-direction
@@ -223,11 +223,11 @@ end
 
 function H_bar = avgHadh(G,dx,dy,dz,x_start,x_end,y_start,y_end,z_start,z_end)
     
-    indx = @(x,d) max(round(x/d + 0.5),1);
+    index = @(x,d) max(round(x/d + 0.5),1);
 
-    i_start = indx(x_start,dx); i_end = indx(x_end,dx);
-    j_start = indx(y_start,dy); j_end = indx(y_end,dy);
-    k_start = indx(z_start,dz); k_end = indx(z_end,dz);
+    i_start = index(x_start,dx); i_end = index(x_end,dx);
+    j_start = index(y_start,dy); j_end = index(y_end,dy);
+    k_start = index(z_start,dz); k_end = index(z_end,dz);
 
     H = G(i_start:i_end,j_start:j_end,k_start);
     for k = k_start+1:k_end

@@ -10,7 +10,7 @@ shear_y_low = 300; % 1/s low shear test (top/bottom of channel)
 shear_z_low = 220; % Low shear test (front/back of channel)
 
 shear_y_high = 1500; % 1/s High shear test (top/bottom of channel)
-shear_z_high = 1100; % High shear test (front/back of chanel)
+shear_z_high = 1100; % High shear test (front/back of channel)
 
 
 % % For the H channel in Link et al.

@@ -74,7 +74,7 @@ M_rxn 2; // Number of time steps for reactions solve: h_react = dt / M_react
 num_plts 7; // Total Number of platelet species (Integer)
 num_plts_mobile 2; // Number of mobile platelet species (for transport solve)
 Pdiam 3.0e-03; // Diameter of one platelet [mm]
-Pmax 6.67e+07; // Maxiumum packing density [1 / mm^3]
+Pmax 6.67e+07; // Maximum packing density [1 / mm^3]
 Dp 2.5e-5; // Diffusion rate for platelets [mm^2 / s]
 Plt_0 2.5e+05; // Mobile platelet inlet number density [1 / mm^3]
 t0_Plt 0.1; // When the platelets start to enter the domain
@@ -105,10 +105,10 @@ kCohFbgOnPmax 5000; // on-rate of cohesion via Fibrinogen [1/s]
 kActVwf 0.34; // Platelet activation rate by shear on vWF [1/s]
 kActADP 0.34; // Platelet activation rate by ADP [1/s]
 ADP_ast 1e-04; // Critical concentration of ADP [nanomol / mm^3]
-ADP_shift 1.0e-5; // right-shifting param. for Hill Funciton [nanomol / mm^3]
+ADP_shift 1.0e-5; // right-shifting param. for Hill Function [nanomol / mm^3]
 kActE2 0.5; // Platelet activation rate by thrombin [1/s]
 E2_ast 1.0e-06; // Critical concentration of thrombin [nanomol / mm^3]
-E2_shift 0; // right-shifting param. for Hill Funciton [nanomol / mm^3]
+E2_shift 0; // right-shifting param. for Hill Function [nanomol / mm^3]
 
 // Parameters for virtual substance eta
 eta_t 0.1; // threshold value for g(eta) [dimless]
