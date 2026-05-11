@@ -1,0 +1,11 @@
+name: clotFoam-CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Workflow registered"
