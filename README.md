@@ -9,7 +9,7 @@ clotFoam_sd provides a general framework for simulating shear-dependent platelet
 
 ## Installation
 
-clotFoam_sd has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam_sd solver, first follow the instructions on this page: [OpenFoam v9 Unbuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
+clotFoam_sd has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam_sd solver, first follow the instructions on this page: [OpenFoam v9 Ubuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
 
 After installing OpenFoam v9, navigate to a working folder in a shell terminal, clone the git code repository, and build using OpenFoam v9. <em>Note: MacOS users will need to launch the OpenFoam v9 application using Docker prior to building.</em>
 
@@ -45,7 +45,7 @@ method      scotch;
 Then following the `./Allmesh` command, decompose the domain and run with the number of desired processors \[NP]:
 ```
 $ decomposePar
-To automate the number of proccessors if desired
+To automate the number of processors if desired
 $ NP=$(grep numberOfSubdomains system/decomposeParDict | awk '{print $2}' | tr -d ';')
 $ mpirun -np $NP clotFoam_sD -parallel > log 2>&1
 ```
