@@ -10,7 +10,7 @@ The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openf
 
 ## Installation
 
-ShearDependentPltAgg has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam solver, first follow the instructions on this page: [OpenFoam v9 Unbuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
+ShearDependentPltAgg has been developed with the [OpenFoam v9 libraries](https://openfoam.org/version/9/). The code has been tested using the MacOS, Linux, and Ubuntu installations, but should work on any operating system capable of installing OpenFoam. To install the clotFoam solver, first follow the instructions on this page: [OpenFoam v9 Ubuntu Install](https://openfoam.org/download/9-ubuntu/) to install the OpenFoam 9 libraries.  Alternatively, OpenFoam v9 can be downloaded for use with any operating system at the [OpenFoam Download Archive](https://openfoam.org/download/archive/).
 
 After installing OpenFoam v9, navigate to a working folder in a shell terminal, clone the git code repository, and build using OpenFoam v9. <em>Note: MacOS users will need to launch the OpenFoam v9 application using Docker prior to building.</em>
 
@@ -22,7 +22,7 @@ $ wmake
 ```
 
 ## Tutorial cases
-The ShearDependentPltAgg download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constan/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
+The ShearDependentPltAgg download comes with two tutorials for simulating platelet mediated coagulation.  The rectangle2D case simulates thrombosis in a 2D \[240,60] micron rectangle with an injury length of 90 microns, centered in the middle of the bottom wall of the vessel.  The Hjunction3D case simulates hemostasis in an H-shaped micro fluidic device as described in Schoeman et al.  In both cases, the parameters for the simulation can be edited in the $FOAM_CASE/constant/inputParameters file, and in the $FOAM_CASE/system/controlDict file. To run either of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/rectangle2D:
 
 ```
 $ cd ../tutorials/rectangle2D
@@ -99,7 +99,7 @@ The solver begins by loading the mesh, reading in constants from constant/inputP
   * Fluids: calculate Darcy term
   * Fluids: PISO Loop (p and U)
   * Platelets Transport: 
-    * Calcualte hindered velocity flux phi*W:  
+    * Calculate hindered velocity flux phi*W:  
       * Interpolate Theta_T to cell faces using downwind scheme
       * Calculate W(Theta_T) for advection
       * Calculate phi*W

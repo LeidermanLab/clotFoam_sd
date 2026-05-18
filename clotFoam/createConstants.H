@@ -45,7 +45,7 @@ dimensionedScalar nu
     inputParameters.lookup("nu")
 );
 
-// Carman-Kozeny Consant
+// Carman-Kozeny Constant
 dimensionedScalar C_CK
 (
     "C_CK",

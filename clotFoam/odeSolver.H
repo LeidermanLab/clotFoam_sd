@@ -9,7 +9,7 @@ k3 = y0 + 0.5*h*k2,
 k4 = y0 + 1.0*h*k3 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 This solver iterates 4 times, updating each species object y[i] in each 
-iteration using newly computed k's that are scalled by the "a" coefficeint.  
+iteration using newly computed k's that are scaled by the "a" coefficient.  
 This avoids storing k1, k2, k3, and k4 for each subspecies of y[i]. That is, 
 the method creates one k of size y[i]->size(), instead of 4 k's each of 
 size y[i]->size().  

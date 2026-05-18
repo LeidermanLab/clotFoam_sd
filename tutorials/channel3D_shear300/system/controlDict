@@ -24,13 +24,11 @@ startFrom       startTime;
 
 startTime       0;
 
-stopAt          endTime;
-
-endTime         450;
+stopAt          nextWrite;
 
 deltaT          1e-5;
 
-writeControl    adjustableRunTime;
+writeControl    timeStep;
 
 writeInterval   10; 
 

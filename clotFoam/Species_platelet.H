@@ -70,7 +70,7 @@ class Species_platelet : public Species
             Theta_B = Theta_U + Theta_A;
 
             // All platelets (used in hindered transport function)
-            // Theta_T = Theta_B + mobile speices
+            // Theta_T = Theta_B + mobile species
             Theta_T = Theta_B + (field[0] + field[1]) / c.Pmax;
         }
 
