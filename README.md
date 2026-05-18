@@ -104,7 +104,7 @@ The solver begins by loading the mesh, reading in constants from `constant/input
   * Fluids: calculate Darcy term
   * Fluids: PISO Loop (p and U)
   * Platelets Transport: 
-    * Calcualte hindered velocity flux phi*W:  
+    * Calculate hindered velocity flux phi*W:  
       * Interpolate Theta_T to cell faces using downwind scheme
       * Calculate W(Theta_T) for advection
       * Calculate phi*W

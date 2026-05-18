@@ -204,7 +204,7 @@ struct plateletConstants
         inputParameters.lookup("kActE2")
     };
 
-    // Critcal concentration of thrombin for platelet activation
+    // Critical concentration of thrombin for platelet activation
     dimensionedScalar E2_ast
     {
         "E2_ast",
@@ -240,7 +240,7 @@ struct plateletConstants
         readScalar(inputParameters.lookup("eta_t"))
     };
 
-    // Lenght of diffusion for virtual substance eta, l_D_eta
+    // Length of diffusion for virtual substance eta, l_D_eta
     dimensionedScalar l_D_eta
     {
         "l_D_eta",

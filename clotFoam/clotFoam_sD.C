@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     // Calculate initial Theta_T, Theta_U, Theta_A
     Plt.updateFractions();
 
-    // Define parameters for controling CFL and refining when needed
+    // Define parameters for controlling CFL and refining when needed
     scalar maxCoControlDict = 1.;
     scalar maxCoRefine = 1.;
     scalar minCo = 0.20; //was .25
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         #include "CourantNo.H"
         #include "setDeltaT.H"
 
-        // Make a backup copy of curren TimeState (in case refinement is needed)
+        // Make a backup copy of current TimeState (in case refinement is needed)
         TimeState tSCurrent(runTime);
         
         // Update the time using deltaT from CourantNo.H
