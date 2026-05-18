@@ -1,6 +1,6 @@
 # clotFoam_sd
 ## Overview
-clotFoam_sd provides a general framework for simulating shear-dependent platelet-mediated coagulation in OpenFOAM based on our original clotFoam solver in [Montgomery et al. 2023](https://doi.org/10.1016/j.softx.2023.101483).  The solver is based on the platelet aggregation model of [Leiderman & Fogelson 2011](https://10.1371/journal.pcbi.1014241), with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by [Fogelson & Kuharsky 1998](https://doi.org/10.1006/jtbi.1998.0670). The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openfoam.com/) to solve the fluids/pressure equations. Target applications for clotFoam_sd include:
+clotFoam_sd provides a general framework for simulating shear-dependent platelet-mediated coagulation in OpenFOAM based on our original clotFoam solver in [Montgomery et al. 2023](https://doi.org/10.1016/j.softx.2023.101483).  The solver is based on the platelet aggregation model of [Leiderman & Fogelson 2011](https://doi.org/10.1093/imammb/dqq005), with a 12 species coagulation cascade with positive feedback that leads to thrombin generation.  The coagulation model is inspired by [Fogelson & Kuharsky 1998](https://doi.org/10.1006/jtbi.1998.0670). The solver is built on the icoFoam code developed by [OpenCFD Ltd.](http://openfoam.com/) to solve the fluids/pressure equations. Target applications for clotFoam_sd include:
 
 * platelet-mediated coagulation
 * platelet aggregation
