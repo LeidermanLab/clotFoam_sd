@@ -21,7 +21,7 @@ $ wmake
 ```
 
 ## Tutorial cases
-The clotFoam_sd download comes with three tutorials for simulating platelet mediated coagulation.  The `channel3D_shear*` cases simulate thrombosis in a 3D \[160,50,150] micron rectangle with an 2D injury patch \[100,100] microns, centered in the middle of the bottom wall of the vessel.  The shear rates are 300 and 1500 s^{-1}. The `bleedingChip3D` case simulates hemostasis in an H-shaped micro fluidic device as described in [Schoeman et al. 2017](https://doi.org/10.1007/s12195-016-0469-0). In both cases, the parameters for the simulation can be edited in `$FOAM_CASE/constant/inputParameters`, and in `$FOAM_CASE/system/controlDict` file. To run any of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/channel3D_shear300:
+The clotFoam_sd download comes with three tutorials for simulating platelet mediated coagulation.  The `channel3D_shear*` cases simulate thrombosis in a 3D \[160,50,150] micron rectangle with an 2D injury patch \[100,100] microns, centered in the middle of the bottom wall of the vessel.  The shear rates are 300 and 1500 s^{-1}. The `bleedingChip3D` case simulates hemostasis in an H-shaped micro fluidic device as described in [Link et al. 2020](https://epubs.siam.org/doi/10.1137/20M1317785). In both cases, the parameters for the simulation can be edited in `$FOAM_CASE/constant/inputParameters`, and in `$FOAM_CASE/system/controlDict` file. To run any of these simulations, navigate back to the main clotFoam directory, then to the desired tutorial directory.  For example tutorials/channel3D_shear300:
 
 ```
 $ cd ../tutorials/channel3D_shear300
@@ -42,7 +42,7 @@ numberOfSubdomains 16;
 
 method      scotch;
 ```
-Then following the `Allmesh` command, decompose the domain and run with the number of desired processors \[NP]:
+Then following the `./Allmesh` command, decompose the domain and run with the number of desired processors \[NP]:
 ```
 $ decomposePar
 To automate the number of proccessors if desired
@@ -143,7 +143,6 @@ The work was generously supported by grants from the National Science Foundation
 ## Citing This Work
 If you use clotFoam_sD in your work. Please use the following to cite our work:
 
-*clotFoam_sd paper*
 Montgomery, D., Barrientos, E.S., Grdadolink, J., Hendrickson, K., Fogelson, A, Neeves, K. B. and Leiderman, K. (2026) "A three-dimensional shear dependent continuum model of
 platelet aggregation under flow," *in press*. To be available at: [https://doi.org/10.1371/journal.pcbi.1014241](https://doi.org/10.1371/journal.pcbi.1014241).
 
@@ -153,12 +152,12 @@ platelet aggregation under flow," *in press*. To be available at: [https://doi.o
 
 Montgomery, D., Municchi, F. and Leiderman, K. (2023) “clotFoam: An open-source framework to simulate blood clot formation under arterial flow,” SoftwareX, 23, p. 101483. Available at: [https://doi.org/10.1016/j.softx.2023.101483](https://doi.org/10.1016/j.softx.2023.101483).
 
-*Remaining References*
+*Additional References*
 
 Leiderman, K. and Fogelson, A.L. (2011) “Grow with the flow: a spatial–temporal model of platelet deposition and blood coagulation under flow,” Mathematical Medicine and Biology: A Journal of the IMA, 28(1), pp. 47–84. Available at: [https://doi.org/10.1093/imammb/dqq005](https://doi.org/10.1093/imammb/dqq005).
 
 Fogelson, A.L. and Kuharsky, A.L. (1998) “Membrane Binding-site Density Can Modulate Activation Thresholds in Enzyme Systems,” Journal of Theoretical Biology, 193(1), pp. 1–18. Available at: [https://doi.org/10.1006/jtbi.1998.0670](https://doi.org/10.1006/jtbi.1998.0670).
 
-Schoeman, R.M. et al. (2017) “A Microfluidic Model of Hemostasis Sensitive to Platelet Function and Coagulation,” Cellular and Molecular Bioengineering, 10(1), pp. 3–15. Available at: [https://doi.org/10.1007/s12195-016-0469-0](https://doi.org/10.1007/s12195-016-0469-0).
+Link, K.G. et al. (2020) “A Mathematical Model of Platelet Aggregation in an Extravascular Injury Under Flow,” Multiscale Modeling & Simulation Available at: [https://epubs.siam.org/doi/10.1137/20M1317785](https://epubs.siam.org/doi/10.1137/20M1317785).
 
 
