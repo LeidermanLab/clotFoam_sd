@@ -132,10 +132,15 @@ class Species_platelet : public Species
             const volScalarField& S = shearRate;
             const dimensionedScalar& S_L = c.lowShearRate; 
             const dimensionedScalar& S_H = c.highShearRate; 
-
-            // 1st order Lagrange interpolating polynomial
-            return K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L);
-        }
+            const dimensionedScalar& S_M = c.maxShearRate;
+            // 1st order Lagrange interpolating polynomial to 2k then exponential but flatish to 6000 1/s (Edited by Jake Grdadolnik 9/16/25)
+            return 
+	    min
+            (
+               K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L),
+               (K_H/K_H.value() * (0*S+S_L)/(S_L))*Foam::exp( Foam::log(K_L.value() * (2000.0-S_H.value())/(S_L.value()-S_H.value()) + K_H.value() * (2000.0-S_L.value())/(S_H.value()-S_L.value())) + Foam::pow(mag(S/c.one-2000.0)/4000.0,4.6)*Foam::log(1.02))
+	    );
+	}
 
         // Thresholded shear-dependent linear function for vWF on rates
         volScalarField minLinearScaling
@@ -149,13 +154,17 @@ class Species_platelet : public Species
             const dimensionedScalar& S_H = c.highShearRate; 
             const dimensionedScalar& S_M = c.maxShearRate;
 
-            // 1st order Lagrange interpolating polynomial to S_M, then flat
+            // 1st order Lagrange interpolating polynomial then hyperbolic, then flat (Edited by Jake Grdadolnik 1/29/25)
             return 
-            min
+            max
             (
+             Foam::tanh(0.0005*(S/c.one-S_H.value()))*(K_L * (.8*S_M-S_H+0*S)/(S_L-S_H) + K_H * (.8*S_M-S_L+0*S)/(S_H-S_L)),
+	     min
+             (
                 K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L),
-                K_L * (S_M-S_H+0*S)/(S_L-S_H) + K_H * (S_M-S_L+0*S)/(S_H-S_L)
-            ) ;
+                K_L * (.8*S_M-S_H+0*S)/(S_L-S_H) + K_H * (.8*S_M-S_L+0*S)/(S_H-S_L)
+             )
+	    ) ;
         }
 
         // Shear-dependent activation on-rate function S_{act}
