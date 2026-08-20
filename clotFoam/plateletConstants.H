@@ -68,6 +68,14 @@ struct plateletConstants
         inputParameters.lookupOrDefault("maxShearRate",2500.0)
     };
 
+    // Unit shear rate (1 [1/s]), used to non-dimensionalize shearRate
+    dimensionedScalar one
+    {
+        "one",
+        dimless/dimTime,
+        1.0
+    };
+
     // Platelet adhesion binding on-rate via collagen
     dimensionedScalar kAdhCol
     {
