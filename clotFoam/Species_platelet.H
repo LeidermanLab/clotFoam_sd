@@ -138,7 +138,7 @@ class Species_platelet : public Species
 	    min
             (
                K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L),
-               (K_H/K_H.value() * (0*S+S_L)/(S_L))*Foam::exp( Foam::log(K_L.value() * (2000.0-S_H.value())/(S_L.value()-S_H.value()) + K_H.value() * (2000.0-S_L.value())/(S_H.value()-S_L.value())) + Foam::pow(mag(S/1.0-2000.0)/4000.0,4.6)*Foam::log(1.02))
+               (K_H/K_H.value() * (0*S+S_L)/(S_L))*Foam::exp( Foam::log(K_L.value() * (2000.0-S_H.value())/(S_L.value()-S_H.value()) + K_H.value() * (2000.0-S_L.value())/(S_H.value()-S_L.value())) + Foam::pow(mag(S/c.one-2000.0)/4000.0,4.6)*Foam::log(1.02))
 	    );
 	}
 
@@ -158,7 +158,7 @@ class Species_platelet : public Species
             return 
             max
             (
-             Foam::tanh(0.0005*(S/1.0-S_H.value()))*(K_L * (.8*S_M-S_H+0*S)/(S_L-S_H) + K_H * (.8*S_M-S_L+0*S)/(S_H-S_L)),
+             Foam::tanh(0.0005*(S/c.one-S_H.value()))*(K_L * (.8*S_M-S_H+0*S)/(S_L-S_H) + K_H * (.8*S_M-S_L+0*S)/(S_H-S_L)),
 	     min
              (
                 K_L * (S-S_H)/(S_L-S_H) + K_H * (S-S_L)/(S_H-S_L),
